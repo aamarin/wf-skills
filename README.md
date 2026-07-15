@@ -48,15 +48,20 @@ rules file (`CLAUDE.md`, `.cursorrules`, etc.), or conversation.
 ## Structure
 
 ```
-skills/          ← agent-agnostic SKILL.md files
-  speckit-orchestrate/SKILL.md
-  agent-brief/SKILL.md
-  ...
-commands/        ← Claude Code slash command wrappers
-  start-session.md
-  speckit.implement.md
-  ...
+.agents/
+  skills/          ← agent-agnostic SKILL.md files (mirrors install target)
+    speckit-orchestrate/SKILL.md
+    agent-brief/SKILL.md
+    ...
+.claude/
+  commands/        ← Claude Code slash command wrappers
+    start-session.md
+    speckit.implement.md
+    ...
 ```
+
+The repo mirrors the project directory structure it installs into.
+For Bob or other agents, copy `.agents/skills/` into `.bob/skills/` or equivalent.
 
 ## Requirements
 
