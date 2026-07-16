@@ -10,4 +10,4 @@ handoffs:
     send: true
 ---
 
-Read `.agents/commands/speckit.specify.md` for the complete PFMS specify workflow.
+Read `.agents/commands/speckit.specify.md` for the complete specify workflow.

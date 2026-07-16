@@ -1,6 +1,6 @@
 ---
 name: speckit-delivery-plan
-description: Delivery decomposition skill for PFMS speckit workflow. Use when you have a complete tasks.md and need to decide PR boundaries, group tasks into GitHub issues, and map parallelization waves before creating issues. Enforces the canonical PFMS workflow with decompose as the default terminus.
+description: Delivery decomposition skill for the speckit workflow. Use when you have a complete tasks.md and need to decide PR boundaries, group tasks into GitHub issues, and map parallelization waves before creating issues. Enforces the canonical workflow with decompose as the default terminus.
 ---
 
 # Speckit Delivery Plan
@@ -13,7 +13,7 @@ that plan via `/speckit.decompose`.
 
 ---
 
-## Canonical PFMS Speckit Workflow
+## Canonical Speckit Workflow
 
 This is the enforced order. Do not skip steps.
 
@@ -32,7 +32,7 @@ to `.agent/spec.md`; `specify` picks it up automatically (step -1 gate).
 **`analyze` is mandatory** — it is the quality gate that catches numbering bugs,
 wrong file paths, and missing verification. Always run it before decompose.
 
-**`decompose` is the default terminus** for PFMS features.
+**`decompose` is the default terminus** for features.
 
 **NNN numbering** uses the GitHub issue number (not sequential 001–NNN).
 GitHub issue creation is atomic — no collision risk when agents run in parallel.

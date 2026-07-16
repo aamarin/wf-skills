@@ -6,4 +6,4 @@ handoffs:
     prompt: Load context and begin work within brief scope
 ---
 
-Read `.agents/commands/speckit.brief.md` for the complete brief generation workflow.
+Read `.agents/skills/agent-brief/SKILL.md` for the complete brief generation workflow.
