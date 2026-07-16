@@ -3,9 +3,14 @@
 Reusable agent skills for Claude Code, Bob, and any markdown-capable AI agent.
 
 Skills are plain markdown files (`SKILL.md`) — no framework required. Any agent
-that reads markdown can use them. Agent-specific command wrappers (e.g. Claude
-slash commands) live in `.claude/commands/` and are thin shims that point at the
-skill holding the actual workflow.
+that reads markdown can use them. Command wrappers (thin shims that point at
+the skill holding the actual workflow) live in `.claude/commands/`. That's the
+one authored copy — Bob has its own command directory (`.bob/commands/`), but
+`wfctl install-skills --agent bob` copies the same `.claude/commands/` content
+there rather than maintaining a second hand-translated set that could drift out
+of sync. (Bob's docs describe a narrower frontmatter schema for its commands —
+`description` + `argument-hint`, no `handoffs` — but in practice it appears to
+tolerate the extra Claude-specific fields fine.)
 
 ## Skills
 
@@ -57,14 +62,15 @@ destination changes:
 | `--agent` | Installs |
 |-----------|----------|
 | `claude` (default) | skills → `.agents/skills/`, command wrappers → `.claude/commands/` |
-| `bob` | skills → `.bob/skills/` |
+| `bob` | skills → `.bob/skills/`, command wrappers → `.bob/commands/` (same source content as Claude's) |
 | `none` | skills → `.agents/skills/` only |
 
-Bob activates a `SKILL.md` directly from its `description` and has no slash
-command layer, so it takes the skills without wrappers.
+Also handles re-runs and removal: a pre-existing file that install-skills
+overwrites is backed up first, and `wfctl uninstall-skills --agent <agent>`
+removes what it installed and restores anything it backed up.
 
 Files of the same name are overwritten — rerun to update, but local edits to
-installed skills are lost.
+installed skills (not backed up by wfctl) are lost.
 
 ### Manual
 
@@ -77,6 +83,7 @@ cp wf-skills/.claude/commands/* .claude/commands/
 
 # Bob
 cp -r wf-skills/.agents/skills/* .bob/skills/
+cp wf-skills/.claude/commands/* .bob/commands/
 ```
 
 ### Any agent
