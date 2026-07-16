@@ -18,16 +18,15 @@ that plan via `/speckit.decompose`.
 This is the enforced order. Do not skip steps.
 
 ```
-brainstorm → [ui-design?] → specify → clarify → plan → tasks → analyze → decompose
-     ↓              ↓          ↓          ↓        ↓      ↓        ↓           ↓
-.agent/       .agent/       spec.md  clarified  plan.md tasks.md quality   delivery.md
-spec.md       spec.md                spec.md                     gate      + GH issues
+brainstorm → specify → clarify → plan → tasks → analyze → decompose
+     ↓          ↓         ↓        ↓       ↓        ↓          ↓
+.agent/     spec.md  clarified plan.md tasks.md quality  delivery.md
+spec.md              spec.md                    gate     + GH issues
 ```
 
 **`brainstorm` is the recommended entry point** — run `/superpowers:brainstorming`
-before `specify`. For UI features, follow with `pfms-ui-design-workflow`. Both write
-to `.agent/spec.md`; `specify` picks it up automatically (step -1 gate).
-`ui-design?` is optional and UI-feature-only.
+before `specify`. It writes to `.agent/spec.md`; `specify` picks it up
+automatically (step -1 gate).
 
 **`analyze` is mandatory** — it is the quality gate that catches numbering bugs,
 wrong file paths, and missing verification. Always run it before decompose.
