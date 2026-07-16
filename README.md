@@ -20,6 +20,7 @@ tolerate the extra Claude-specific fields fine.)
 |-------|-------------|
 | `start-session` | Initialize wfctl session state, infer the pipeline step, report open work |
 | `end-session` | Summarize the session, close wfctl state, surface uncommitted work |
+| `using-wfctl` | Reference for wfctl's full command surface — use when you need a command the other skills don't already call for you |
 
 ### Speckit pipeline
 
