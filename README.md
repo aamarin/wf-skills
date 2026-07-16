@@ -4,11 +4,13 @@ Reusable agent skills for Claude Code, Bob, and any markdown-capable AI agent.
 
 Skills are plain markdown files (`SKILL.md`) — no framework required. Any agent
 that reads markdown can use them. Command wrappers (thin shims that point at
-the skill holding the actual workflow) live in `.claude/commands/`. That's the
-one authored copy — Bob has its own command directory (`.bob/commands/`), but
-`wfctl install-skills --agent bob` copies the same `.claude/commands/` content
-there rather than maintaining a second hand-translated set that could drift out
-of sync. (Bob's docs describe a narrower frontmatter schema for its commands —
+the skill holding the actual workflow, so a slash-command UI has something to
+list) are agent-agnostic too and live in `.agents/commands/` — the one
+authored copy. Each agent's install destination is different (Claude reads
+`.claude/commands/`, Bob reads `.bob/commands/`), but the content is identical,
+so `wfctl install-skills` copies the same source to both rather than
+maintaining a separate hand-translated set per agent that could drift out of
+sync. (Bob's docs describe a narrower frontmatter schema for its commands —
 `description` + `argument-hint`, no `handoffs` — but in practice it appears to
 tolerate the extra Claude-specific fields fine.)
 
@@ -63,7 +65,7 @@ destination changes:
 | `--agent` | Installs |
 |-----------|----------|
 | `claude` (default) | skills → `.agents/skills/`, command wrappers → `.claude/commands/` |
-| `bob` | skills → `.bob/skills/`, command wrappers → `.bob/commands/` (same source content as Claude's) |
+| `bob` | skills → `.bob/skills/`, command wrappers → `.bob/commands/` (same source as Claude's) |
 | `none` | skills → `.agents/skills/` only |
 
 Also handles re-runs and removal: a pre-existing file that install-skills
@@ -80,11 +82,11 @@ git clone https://github.com/aamarin/wf-skills.git
 
 # Claude Code
 cp -r wf-skills/.agents/skills/* .agents/skills/
-cp wf-skills/.claude/commands/* .claude/commands/
+cp wf-skills/.agents/commands/* .claude/commands/
 
 # Bob
 cp -r wf-skills/.agents/skills/* .bob/skills/
-cp wf-skills/.claude/commands/* .bob/commands/
+cp wf-skills/.agents/commands/* .bob/commands/
 ```
 
 ### Any agent
@@ -100,14 +102,15 @@ rules file (`CLAUDE.md`, `.cursorrules`, etc.), or conversation.
     speckit-specify/SKILL.md
     start-session/SKILL.md
     ...
-.claude/
-  commands/        ← Claude Code slash command shims → .agents/skills/
-    speckit.specify.md
+  commands/        ← agent-agnostic command shims → .agents/skills/, copied to
+    speckit.specify.md   each agent's own command directory at install time
     start-session.md
     ...
 ```
 
-The repo mirrors the project directory structure it installs into.
+`.agents/skills/` mirrors its install target directly. `.agents/commands/`
+doesn't — it's the one authored source that `install-skills` copies into
+`.claude/commands/` (Claude) or `.bob/commands/` (Bob) depending on `--agent`.
 
 ## Requirements
 
