@@ -1,0 +1,10 @@
+{
+  "verbs": {
+    "list": ["gh", "issue", "list", "--state", "open", "--limit", "20"],
+    "view": ["gh", "issue", "view", "{id}"],
+    "close": ["gh", "issue", "close", "{id}", "--comment", "{comment}"],
+    "comment": ["gh", "issue", "comment", "{id}", "--body", "{body}"],
+    "create": ["gh", "issue", "create", "--title", "{title}", "--body", "{body}"],
+    "label": ["gh", "issue", "edit", "{id}", "--{action}-label", "{label}"]
+  }
+}

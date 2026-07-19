@@ -20,16 +20,43 @@ slash commands) are in `commands/`.
 | `speckit-implement` | Execute the implementation plan from tasks.md |
 | `speckit-plan` | Generate implementation design artifacts from a spec |
 | `speckit-tasks` | Generate a dependency-ordered tasks.md from design artifacts |
+| `scaffold-tracker` | Author a `.agents/trackers/<name>.json` backend so `wfctl issue` works with a non-GitHub tracker (e.g. a private Jira CLI) |
+
+## Issue trackers
+
+The session commands (`start-session`, `end-session`) touch an issue tracker
+through a fixed vocabulary of six verbs — `list, view, close, comment, create,
+label` — dispatched by `wfctl issue <verb>`. Each backend is a
+`.agents/trackers/<name>.json` map of verb → argv template; the supported-verb
+set is just the map's keys. `github.json` ships here. For any other tracker,
+author one with the `scaffold-tracker` skill and select it at install time.
+
+`wfctl issue` builds real argv lists (never a shell string), so a comment body
+containing quotes or `$(...)` is one inert argument. An unsupported verb or an
+unconfigured tracker no-ops instead of failing the session.
+
+```jsonc
+// .agents/trackers/github.json
+{ "verbs": {
+  "close": ["gh", "issue", "close", "{id}", "--comment", "{comment}"],
+  "label": ["gh", "issue", "edit", "{id}", "--{action}-label", "{label}"]
+} }
+```
 
 ## Installation
 
 ### Via wfctl (recommended)
 
 ```bash
-wfctl install-skills
+wfctl install-skills                    # skills + commands
+wfctl install-skills --tracker github   # also install the GitHub tracker backend
 ```
 
-Copies `skills/` → `.agents/skills/` and `commands/` → `.claude/commands/`.
+Copies `.agents/skills/` → `.agents/skills/` and `.agents/commands/` →
+`.claude/commands/`. `--tracker github` also copies `.agents/trackers/github.json`
+and records the choice in `.wf-skills-manifest.json`. For a custom backend,
+author `.agents/trackers/<name>.json` (see `scaffold-tracker`) then run
+`wfctl install-skills --tracker <name>`; `--tracker none` clears the choice.
 
 ### Manual
 
@@ -52,6 +79,9 @@ rules file (`CLAUDE.md`, `.cursorrules`, etc.), or conversation.
   skills/          ← agent-agnostic SKILL.md files (mirrors install target)
     speckit-orchestrate/SKILL.md
     agent-brief/SKILL.md
+    ...
+  trackers/        ← issue-tracker backends (verb→command maps)
+    github.json
     ...
 .claude/
   commands/        ← Claude Code slash command wrappers

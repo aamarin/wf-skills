@@ -1,156 +1,96 @@
 # Design: Pluggable Issue-Tracker Backends for Session Skills
 
-**Date:** 2026-07-18
-**Status:** Proposed
+**Date:** 2026-07-18 (revised 2026-07-19 — dispatcher model)
+**Status:** Implemented
 
 ## Problem
 
-`start-session.md` and `end-session.md` hardcode `gh issue ...` calls directly
-in their prose (drift detection, `Closes #N` reconciliation). This works for
-GitHub-backed repos but breaks for any repo using a different tracker — e.g.
-a private work repo backed by a custom Jira CLI. There's currently no way to
-swap the tracker without hand-editing the session skills themselves, and no
-guidance for authoring a new backend.
+`start-session` / `end-session` hardcoded `gh issue ...` calls. This breaks any
+repo backed by a different tracker — notably a private work Jira CLI that can't
+be shared publicly. The session skills need to be tracker-agnostic.
 
 ## Scope
 
-MVP covers exactly two skills: `start-session.md` (drift detection, listing
-open issues) and `end-session.md` (`Closes #N` reconciliation). Other
-wf-skills that touch issue trackers (`speckit-delivery-plan`, `agent-brief`,
-etc.) are out of scope until they need it.
+Two skills: `start-session` (list open issues for drift check) and `end-session`
+(reconcile the resolved issue). Tracker choice is one-per-repo, fixed at install
+time. Six standard verbs: `list, view, close, comment, create, label`.
 
-Tracker choice is one-per-repo, fixed at install time — not per-issue, not
-runtime-switchable.
+## Design (dispatcher, not markdown adapter)
 
-## Design
+An earlier draft made each backend a markdown *skill* the agent reads, with a
+`verbs:` frontmatter declaration. That was rejected in favor of a deterministic
+CLI dispatcher, because:
 
-### Verb contract
+1. **Injection safety.** The `close`/`comment`/`create` verbs carry free text.
+   An agent hand-composing `gh issue comment N --body "<text>"` in a shell is a
+   quoting/injection hazard. A dispatcher using `subprocess` argv lists is safe
+   by construction.
+2. **Deterministic skips.** An unsupported verb is a no-op decided in code, not
+   a prose instruction the agent might improvise around.
+3. **No new coupling.** Session skills already require `wfctl`, so a `wfctl`
+   subcommand adds no dependency the session surface didn't already have.
 
-Six canonical verbs, each with a short ID and a corresponding `##` header a
-tracker skill implements:
+The design also collapses the earlier "capability declaration vs implementation"
+validation problem: because a backend is a `verb → command` map, **the supported
+verbs are the map's keys** — there is no separate declaration to drift, so a
+backend cannot misdeclare its capabilities.
 
-| ID        | Header                                    | Used by                          |
-|-----------|--------------------------------------------|-----------------------------------|
-| `list`    | `## List open issues`                      | start-session drift check         |
-| `view`    | `## View issue <ID>`                       | start-session, end-session verify |
-| `close`   | `## Close issue <ID> with comment`         | end-session Closes #N reconciliation |
-| `comment` | `## Comment on issue <ID>`                 | end-session progress notes        |
-| `create`  | `## Create issue`                          | end-session untracked-work/TODO handling |
-| `label`   | `## Add/remove label on issue <ID>`        | end-session in-progress labeling  |
+### Backend config
 
-A tracker skill does not need to implement all six. It declares the subset it
-supports in frontmatter:
-
-```markdown
----
-name: tracker-jira
-verbs: [list, view, comment]
----
-```
-
-`tracker-github/SKILL.md` (ships in wf-skills) declares all six, backed by
-`gh issue ...`. A private `tracker-jira/SKILL.md` (never published to
-wf-skills — company-specific) might declare only `[list, view, comment]`,
-backed by a custom Jira CLI.
-
-### Session skill changes
-
-`start-session.md` and `end-session.md` no longer call `gh` directly. Instead:
-
-1. Read the `tracker` field from `.wf-skills-manifest.json`.
-2. If unset or `none`: skip all tracker-dependent steps (drift detection,
-   `Closes #N` reconciliation) — same graceful-skip pattern pfms's
-   `start-session.md` already uses when `gh auth status` fails.
-3. If set: load `.agents/skills/tracker-<name>/SKILL.md`, check its declared
-   `verbs:` list before using any verb.
-   - Verb declared → follow that `##` section's instructions.
-   - Verb not declared → skip that sub-step silently (not an error). E.g. if
-     `tracker-jira` doesn't declare `close`, the Closes #N reconciliation step
-     is skipped and the session summary just notes the issue reference
-     without attempting to close it.
-
-### Install-time flow
-
-`wfctl install-skills` gains `--tracker <name>` — a free string, not a fixed
-enum, since `scaffold-tracker` can produce any name. Only the literal value
-`github` is special-cased (it's the one backend wf-skills ships). Omitted or
-`none` disables tracker integration.
-
-- `--tracker github`: `tracker-github` is copied from the wf-skills clone,
-  using the exact same plan/backup/manifest mechanism already used for every
-  other installed item (just another `src_rel, dst_rel` pair, conditionally
-  added to the install plan).
-- `--tracker <anything else>` (e.g. `jira`): wf-skills does not attempt to
-  fetch or copy anything for it — the public repo only ships `github`.
-  Instead, `install-skills` checks whether
-  `.agents/skills/tracker-<name>/SKILL.md` already exists in the target repo
-  and warns if not: `"selected tracker 'jira' but no tracker-jira/SKILL.md
-  found — add yours first (see scaffold-tracker)"`.
-- `--tracker none` / omitted: no tracker key is written; session skills
-  behave as if unset.
-
-The choice is persisted as a new top-level `"tracker"` key in
-`.wf-skills-manifest.json`, a sibling of the existing per-agent entries
-(`"claude"`, etc.) rather than nested under one:
+`.agents/trackers/<name>.json` — a map of verb to argv template. `{name}`
+placeholders are substituted per-token (within-token, so `"--{action}-label"`
+→ `--add-label`). `github.json` ships in wf-skills; custom backends are authored
+locally via the `scaffold-tracker` skill and never touch the public repo.
 
 ```json
 {
-  "tracker": "github",
-  "claude": {
-    "repo": "https://github.com/aamarin/wf-skills",
-    "ref": "main",
-    "installed_at": "...",
-    "items": [...]
+  "verbs": {
+    "list": ["gh", "issue", "list", "--state", "open", "--limit", "20"],
+    "view": ["gh", "issue", "view", "{id}"],
+    "close": ["gh", "issue", "close", "{id}", "--comment", "{comment}"],
+    "comment": ["gh", "issue", "comment", "{id}", "--body", "{body}"],
+    "create": ["gh", "issue", "create", "--title", "{title}", "--body", "{body}"],
+    "label": ["gh", "issue", "edit", "{id}", "--{action}-label", "{label}"]
   }
 }
 ```
 
-### Scaffolding: `scaffold-tracker` skill
+### Dispatcher (`wfctl issue <verb>`)
 
-A new skill (ships in wf-skills — it's generic, not tied to any backend)
-that walks through authoring a new tracker adapter conversationally:
+Implemented in wfctl (`wfctl/_tracker.py`, `dispatch()`), invoked as
+`wfctl issue <verb> [id] [--comment/--body/--title/--label/--action]`:
 
-1. Ask for the tracker name (e.g. `jira`).
-2. Ask which of the six verbs this backend supports.
-3. For each supported verb, ask for the concrete command/instructions.
-4. Write `.agents/skills/tracker-<name>/SKILL.md` from a template, with
-   frontmatter (`verbs: [...]`) and `##` headers filled in for exactly the
-   supported subset.
-5. Run the structural self-check (below) before finishing.
+1. Read `tracker` name from `.wf-skills-manifest.json`. Unset → notice, exit 0.
+2. Load `.agents/trackers/<name>.json`. Missing/invalid → warn, exit 0.
+3. Verb not in the map → "does not support" notice, exit 0.
+4. Substitute `{...}` per argv token; missing param → `✗ requires --x`, exit 1.
+5. `subprocess.run(argv, ...)` — no `shell=True`. Passthrough stdout; on failure
+   print stderr and propagate the exit code. On success, log an `issue` event.
 
-This is the mechanism for "bring your own backend" — a private/work-specific
-tracker adapter is generated and lives entirely in the target repo; it never
-needs to touch the public wf-skills repo.
+Steps 1–3 are the graceful-degrade path: a session must never fail because a
+tracker step couldn't run.
 
-### Validation
+### Install-time selection
 
-No standalone validate command. Validation is a structural check — frontmatter
-`verbs:` list vs. actual `##` headers present — reused at two points that
-already exist in the design:
+`wfctl install-skills --tracker <name>`:
+- `github` → copies `github.json` into the plan (same backup/manifest machinery
+  as any other item) and records `manifest["tracker"] = "github"`.
+- other name → records the name and warns if
+  `.agents/trackers/<name>.json` doesn't exist yet.
+- `none` → clears the key. Omitted → unchanged.
 
-1. **End of `scaffold-tracker`** — self-check immediately after generating
-   the file.
-2. **`install-skills` tracker existence check** — already reading the file to
-   confirm it exists; extended to also diff frontmatter against headers.
+The `tracker` key is a top-level sibling of the per-agent manifest entries;
+`uninstall-skills` (agent-scoped) leaves it in place.
 
-On mismatch, the check emits a precise diagnostic (e.g. `"frontmatter
-declares 'close' but no '## Close issue <ID> with comment' header found"`)
-and stops there — it does not auto-fix. The diagnostic is specific enough
-that the agent can act on it immediately in conversation if the user asks,
-but auto-patching a hand-authored, possibly-deliberate partial adapter
-without the user seeing the mismatch first is the wrong default.
+### scaffold-tracker skill
 
-### Error handling
-
-- Manifest references a tracker skill file that's missing at session-start
-  time → warn, degrade to `none` behavior (skip tracker-dependent steps),
-  don't hard-fail session start.
-- Manifest with no `tracker` key (pre-existing installs) → treated as `none`.
+Interviews for a backend name, the supported subset of the six verbs, and each
+verb's argv template; writes `.agents/trackers/<name>.json`; self-checks that it
+is valid JSON with non-empty argv arrays and only allowed placeholders.
 
 ## Out of scope
 
-- Per-issue tracker selection within a single repo.
-- Runtime tracker switching.
-- Any wf-skills-shipped backend other than `tracker-github`.
-- Auto-fix for validation mismatches.
-- Extending the verb contract to skills beyond start/end-session.
+- Per-issue tracker selection within one repo; runtime switching.
+- Any shipped backend other than `github.json`.
+- Extending the verb vocabulary beyond the six, or to skills other than
+  start/end-session.
