@@ -1,4 +1,5 @@
 {
+  "key_pattern": "\\d+",
   "verbs": {
     "list": ["gh", "issue", "list", "--state", "open", "--limit", "20"],
     "view": ["gh", "issue", "view", "{id}"],
