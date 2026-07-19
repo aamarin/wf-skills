@@ -10,4 +10,4 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
-Read `.agents/skills/speckit-analyze/SKILL.md` for the complete analysis workflow.
+Read `.agents/skills/speckit-analyze/SKILL.md` (or `../skills/speckit-analyze/SKILL.md` relative to this file, if `.agents/skills` isn't present) for the complete analysis workflow.

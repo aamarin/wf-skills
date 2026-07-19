@@ -18,4 +18,4 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
-Read `.agents/skills/speckit-plan/SKILL.md` for the complete planning workflow.
+Read `.agents/skills/speckit-plan/SKILL.md` (or `../skills/speckit-plan/SKILL.md` relative to this file, if `.agents/skills` isn't present) for the complete planning workflow.

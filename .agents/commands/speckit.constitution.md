@@ -14,4 +14,4 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
-Read `.agents/skills/speckit-constitution/SKILL.md` for the complete constitution workflow.
+Read `.agents/skills/speckit-constitution/SKILL.md` (or `../skills/speckit-constitution/SKILL.md` relative to this file, if `.agents/skills` isn't present) for the complete constitution workflow.

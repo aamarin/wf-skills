@@ -19,4 +19,4 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
-Read `.agents/skills/speckit-tasks/SKILL.md` for the complete task generation workflow.
+Read `.agents/skills/speckit-tasks/SKILL.md` (or `../skills/speckit-tasks/SKILL.md` relative to this file, if `.agents/skills` isn't present) for the complete task generation workflow.

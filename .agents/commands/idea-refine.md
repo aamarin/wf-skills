@@ -10,4 +10,4 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
-Read `.agents/skills/idea-refine/SKILL.md` for the complete workflow.
+Read `.agents/skills/idea-refine/SKILL.md` (or `../skills/idea-refine/SKILL.md` relative to this file, if `.agents/skills` isn't present) for the complete workflow.

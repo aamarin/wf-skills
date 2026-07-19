@@ -6,4 +6,4 @@ handoffs:
     prompt: Load context and begin work within brief scope
 ---
 
-Read `.agents/skills/agent-brief/SKILL.md` for the complete brief generation workflow.
+Read `.agents/skills/agent-brief/SKILL.md` (or `../skills/agent-brief/SKILL.md` relative to this file, if `.agents/skills` isn't present) for the complete brief generation workflow.

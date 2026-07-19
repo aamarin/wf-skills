@@ -10,4 +10,4 @@ handoffs:
     send: true
 ---
 
-Read `.agents/skills/speckit-specify/SKILL.md` for the complete specify workflow.
+Read `.agents/skills/speckit-specify/SKILL.md` (or `../skills/speckit-specify/SKILL.md` relative to this file, if `.agents/skills` isn't present) for the complete specify workflow.

@@ -15,4 +15,4 @@ $ARGUMENTS
 You **MUST** consider the user input before proceeding (if not empty).
 If the user provides a custom grouping instruction (e.g., "group into 2 issues"), honour it.
 
-Read `.agents/skills/speckit-delivery-plan/SKILL.md` for the complete decompose workflow.
+Read `.agents/skills/speckit-delivery-plan/SKILL.md` (or `../skills/speckit-delivery-plan/SKILL.md` relative to this file, if `.agents/skills` isn't present) for the complete decompose workflow.
