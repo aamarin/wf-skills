@@ -21,8 +21,11 @@ that a fresh session (after `/clear`) can resume from the artifacts alone.
    git log -p ${BASE:+${BASE}..HEAD} ${BASE:--20} | grep -nE '^\+.*(TODO|FIXME)'  # TODOs added
    ```
    Read the commit subjects for what shipped, `--stat` for files touched, and note
-   any new TODO/FIXME as follow-up candidates. Commit subjects containing
-   `Closes #N` / `Fixes #N` are the issues to reconcile in step 5.
+   any new TODO/FIXME as follow-up candidates. The branch's own issue is already
+   known — it's the branch key (`wfctl status` shows it), no scanning needed. If a
+   commit subject says it *also* resolved another issue (your tracker's convention,
+   e.g. GitHub `Closes #123` or Jira `Fixes PROJ-45`), note those as secondary
+   issues to reconcile in step 6.
 
 3. **Close the session and write the summary scaffold:**
    ```bash
@@ -58,28 +61,30 @@ that a fresh session (after `/clear`) can resume from the artifacts alone.
    ```
 
 5. **Commit** any uncommitted work with a clear message referencing the active
-   issue (`Closes #N` if it fully resolves one).
+   issue (include your tracker's close keyword if it has one, e.g. GitHub
+   `Closes #N` — step 6 verifies and closes regardless).
 
 6. **Reconcile the issue tracker** (skip silently if no tracker is configured or a
-   verb is unsupported — `wfctl issue` no-ops in both cases). Backend-agnostic —
-   works on GitHub, Jira, or a custom tracker:
+   verb is unsupported — `wfctl issue` no-ops in both cases). The branch's issue
+   key is already known — `wfctl status` prints it. Verbs are backend-agnostic
+   (GitHub, Jira, or a custom tracker):
 
    ```bash
-   # Verify / close the issue this session resolved (from the Closes #N in step 2)
-   wfctl issue view <N>
-   wfctl issue close <N> --comment "Completed this session."
+   ISSUE=<branch issue key from `wfctl status`>
 
-   # Or, if work is only partially done, leave it open with a progress note:
-   wfctl issue comment <N> --body "Partial progress: <what remains>"
-   wfctl issue label <N> --action add --label in-progress
+   # View first, then close only if still open. Idempotent: handles trackers that
+   # already auto-closed the issue on merge, and those that don't — no tracker-
+   # specific assumption needed.
+   wfctl issue view "$ISSUE"
+   wfctl issue close "$ISSUE" --comment "Completed this session."   # only if still open
 
-   # File any new work discovered this session:
+   # If work is only partially done, leave it open with a progress note:
+   wfctl issue comment "$ISSUE" --body "Partial progress: <what remains>"
+   wfctl issue label "$ISSUE" --action add --label in-progress
+
+   # Reconcile any secondary issues noted in step 2 the same way, and file new work:
    wfctl issue create --title "<title>" --body "<context>"
    ```
-
-   Note: on GitHub, pushing a commit with `Closes #N` to the default branch
-   already auto-closes the issue — use `wfctl issue view <N>` to confirm and only
-   `close` explicitly when it did not (e.g. merged to a non-default branch).
 
 7. **Report:** session closed, summary written, tracker updates made, next steps,
    any blockers. If ending because context is filling, remind the user they can
