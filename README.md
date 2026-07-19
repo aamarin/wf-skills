@@ -50,6 +50,7 @@ tolerate the extra Claude-specific fields fine.)
 | `receiving-code-review` | Verify review feedback technically instead of agreeing reflexively |
 | `verification-before-completion` | Run the checks and confirm output before claiming anything works |
 | `finishing-a-development-branch` | Decide how to integrate completed work — merge, PR, or cleanup |
+| `using-wm` | Reference for workmux (`wm`) — git worktrees + tmux; the `--background` rule that lets agents create worktrees headlessly |
 | `using-superpowers` | Establishes how to find and invoke skills |
 
 ## Issue trackers
