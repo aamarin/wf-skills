@@ -1,10 +1,7 @@
 ---
 name: 'speckit-specify'
-description: 'Create or update the feature specification from a natural language feature description. Uses GitHub issue numbers as NNN (collision-proof for parallel agents).'
-compatibility: 'Requires spec-kit project structure with .specify/ directory and gh CLI'
-metadata:
-  author: 'pfms'
-  source: '.claude/commands/speckit.specify.md'
+description: 'Create or update the feature specification from a natural language feature description. Requires an existing branch named {issue-key}-{slug} for an issue that already exists in the configured tracker — never creates one.'
+compatibility: 'Requires spec-kit project structure with .specify/templates/ and wfctl'
 ---
 
 ## Outline
@@ -52,81 +49,58 @@ Given that feature description, do this:
    superpowers brainstorming or any other domain skill. All of them write to
    `.agent/spec.md`; speckit picks it up here regardless of which skill produced it.
 
-1. **Generate a concise short name** (2-4 words) for the branch:
-   - Analyze the feature description and extract the most meaningful keywords
-   - Create a 2-4 word short name that captures the essence of the feature
-   - Use action-noun format when possible (e.g., "add-user-auth", "fix-payment-bug")
-   - Preserve technical terms and acronyms (OAuth2, API, JWT, etc.)
-   - Keep it concise but descriptive enough to understand the feature at a glance
-   - Examples:
-     - "I want to add user authentication" → "user-auth"
-     - "Implement OAuth2 integration for the API" → "oauth2-api-integration"
-     - "Create a dashboard for analytics" → "analytics-dashboard"
-     - "Fix payment processing timeout bug" → "fix-payment-timeout"
+1. **Confirm the branch already carries a real issue key.** This workflow never
+   creates an issue or mints a feature number — the branch must already be
+   named `{issue-key}-{slug}` for an issue that exists in the tracker (e.g. a
+   worktree tool created it from an existing GitHub issue or Jira ticket
+   before you ran `/speckit.specify`).
 
-2. **Determine feature number using GitHub issue (collision-proof)**:
-
-   Sequential NNN numbering has a race condition when parallel agents both check
-   at the same time. This workflow uses GitHub issue numbers as feature numbers
-   instead — GitHub issue creation is atomic, guaranteeing uniqueness across all
-   parallel agents.
-
-   a. **Check if the user provided an issue number** in the feature description:
-   - Look for patterns like `#251`, `issue 251`, or `--issue 251`
-   - If found → extract the number (e.g., 251), use it as NNN. Skip to step 2d.
-
-   b. **Search for an existing open GitHub issue** matching this feature:
    ```bash
-   gh issue list --search "{short-name}" --state open --limit 5 --json number,title
-   ```
-   - Review results: if a clear match is found (title contains the short-name or
-     key feature keywords) → confirm it is the right issue, use its number as NNN.
-     Skip to step 2d.
-   - If no match or ambiguous → proceed to step 2c.
-
-   c. **Create a new GitHub issue** and use its number:
-   ```bash
-   gh issue create \
-     --title "{short-name}: {feature description summary}" \
-     --body "Speckit planning in progress. Spec, plan, and tasks will be linked here." \
-     --label "enhancement"
-   ```
-   - Extract the issue number from the returned URL (e.g., `https://github.com/.../issues/265` → 265)
-   - Use that number as NNN.
-
-   d. **Run the create-new-feature script** with the GitHub issue number:
-   ```bash
-   .specify/scripts/bash/create-new-feature.sh --json "$ARGUMENTS" --number {GH_ISSUE_NUMBER} --short-name "{short-name}"
+   wfctl status
    ```
 
-   **If the script fails with "branch already exists"** (common when running `/speckit.specify`
-   from inside a worktree already created by `wm new` — the branch exists but the spec
-   artifacts have not been initialised yet):
+   This prints `#{key}  {branch}`, where `{key}` is extracted from the branch
+   name using the active tracker's configured shape (plain `\d+` by default;
+   non-numeric keys like `PROJ-123` need `key_pattern` set in the tracker's
+   `.agents/trackers/<name>.json`).
 
-   1. Confirm you are on the correct branch: `git branch --show-current`
-   2. Derive the paths manually — do not re-run the script:
-      - `BRANCH_NAME = {GH_ISSUE_NUMBER}-{short-name}`
-      - `FEATURE_DIR = specs/{BRANCH_NAME}`
-      - `SPEC_FILE   = {FEATURE_DIR}/spec.md`
-   3. Create the artifacts directory:
-      ```bash
-      mkdir -p specs/{BRANCH_NAME}/checklists
-      ```
-   4. Continue from step 3 (load spec template) using the derived paths.
+   - If it prints a real key → continue to step 2.
+   - If it prints `#unknown` → **stop**. Tell the user: "This branch isn't
+     named after an existing issue. Create or check out a branch named
+     `{issue-key}-{short-name}` for an issue that already exists in the
+     tracker, then re-run `/speckit.specify`." Do not invent a number or
+     create an issue to work around this.
 
-   **IMPORTANT**:
-   - You must only ever run the create-new-feature script once per feature
-   - The JSON output will contain BRANCH_NAME and SPEC_FILE paths
-   - The branch will be named `{GH_ISSUE_NUMBER}-{short-name}` (e.g., `251-extract-api-routes`)
-   - The spec will live at `specs/{GH_ISSUE_NUMBER}-{short-name}/spec.md`
-   - For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot")
-   - **Why GitHub issue numbers**: they are globally unique, atomic, and align the
-     speckit NNN with the GitHub issue tracking number — one numbering system instead
-     of two. Existing sequentially-numbered spec dirs are unaffected.
+2. **Verify the issue exists** (read-only — this workflow never creates one):
 
-3. Load `.specify/templates/spec-template.md` to understand required sections.
+   ```bash
+   wfctl issue view {key}
+   ```
 
-4. Follow this execution flow:
+   - Prints the issue → confirmed, continue to step 3.
+   - Prints "No tracker configured" or "does not support 'view'" (exit 0) →
+     the check can't be performed for this repo; proceed on trust.
+   - Exits non-zero → the key doesn't resolve to a real issue. **Stop** and
+     tell the user the branch's issue key isn't valid; do not proceed or
+     fabricate one.
+
+3. **Derive the spec paths directly from the current branch** — no numbering
+   script, nothing to mint:
+
+   ```bash
+   BRANCH_NAME=$(git branch --show-current)
+   FEATURE_DIR="specs/${BRANCH_NAME}"
+   SPEC_FILE="${FEATURE_DIR}/spec.md"
+   mkdir -p "${FEATURE_DIR}/checklists"
+   ```
+
+   The slug half of `BRANCH_NAME` (everything after the issue key) is the
+   human-readable feature name — reuse it in the spec title and checklist
+   header instead of generating a new one from the description.
+
+4. Load `.specify/templates/spec-template.md` to understand required sections.
+
+5. Follow this execution flow:
    1. Parse user description from Input
       If empty: ERROR "No feature description provided"
    2. Extract key concepts from description
@@ -151,9 +125,9 @@ Given that feature description, do this:
    7. Identify Key Entities (if data involved)
    8. Return: SUCCESS (spec ready for planning)
 
-5. Write the specification to SPEC_FILE using the template structure, replacing placeholders with concrete details derived from the feature description while preserving section order and headings.
+6. Write the specification to SPEC_FILE using the template structure, replacing placeholders with concrete details derived from the feature description while preserving section order and headings.
 
-6. **Specification Quality Validation**: After writing the initial spec, validate it against quality criteria:
+7. **Specification Quality Validation**: After writing the initial spec, validate it against quality criteria:
 
    a. **Create Spec Quality Checklist**: Generate a checklist file at `FEATURE_DIR/checklists/requirements.md` using the checklist template structure with these validation items:
 
@@ -244,15 +218,16 @@ Given that feature description, do this:
 
    d. **Update Checklist**: After each validation iteration, update the checklist file with current pass/fail status
 
-7. Report completion with branch name, spec file path, checklist results, and readiness for the next phase (`/speckit.clarify` or `/speckit.plan`).
+8. Report completion with branch name, spec file path, checklist results, and readiness for the next phase (`/speckit.clarify` or `/speckit.plan`).
 
    Also remind the user of the branch's role in the delivery workflow:
 
-   > **Planning branch convention**: `{NNN}-{feature-name}` is a **planning branch** — it will become a lightweight planning PR (`specs/{NNN}-{feature-name}/` only, no code) that merges to `dev` before any implementation begins. Implementation branches are created off `dev` after that planning PR merges.
+   > **Planning branch convention**: `{issue-key}-{feature-name}` is a **planning branch** — it will become a lightweight planning PR (`specs/{issue-key}-{feature-name}/` only, no code) that merges to `dev` before any implementation begins. Implementation branches are created off `dev` after that planning PR merges.
    >
-   > **One PR = one issue.** The GitHub issue created for this feature closes when its single implementation PR merges (`Closes #{NNN}` in the PR description). If the feature is too large for one PR, flag it during `/speckit.decompose` — do not pre-split; discuss first.
+   > **One PR = one issue.** When the implementation PR merges, reconcile the tracker (`wfctl issue view`/`close`, backend-agnostic — `end-session` does this automatically). If the feature is too large for one PR, flag it during `/speckit.decompose` — do not pre-split; discuss first.
 
-**NOTE:** The script creates and checks out the new branch and initializes the spec file before writing.
+**NOTE:** This workflow assumes the branch and its issue key already exist (step 1
+stops otherwise) — it only initializes the spec artifacts on top of that branch.
 
 ## Quick Guidelines
 
