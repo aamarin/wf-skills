@@ -1,3 +1,9 @@
+---
+name: start-session
+description: Use when starting a development session in a git worktree - initializes wfctl session state, loads handoff artifacts from the last session, and reports open work before any code is touched.
+compatibility: 'Requires wfctl to be installed'
+---
+
 # Start Session
 
 You are starting a development session in the current git worktree. If the last

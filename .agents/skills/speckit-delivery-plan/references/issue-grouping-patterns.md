@@ -110,7 +110,7 @@ acceptance criteria are fully satisfied.
 
 **Issue title format:** `{feature-id} T{NNN}: {task description verb phrase}`
 
-## Issue Body Quality Rules (PFMS)
+## Issue Body Quality Rules
 
 Regardless of pattern, every child issue must have:
 

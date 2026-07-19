@@ -1,3 +1,9 @@
+---
+name: end-session
+description: Use when finishing a development session - writes a session-summary handoff artifact, reconciles the issue tracker, and surfaces uncommitted work before the context is lost.
+compatibility: 'Requires wfctl to be installed'
+---
+
 # End Session
 
 You are ending the current development session. Produce a handoff good enough
