@@ -28,7 +28,7 @@ tolerate the extra Claude-specific fields fine.)
 
 | Skill | Description |
 |-------|-------------|
-| `speckit-specify` | Create the feature spec from a description; uses GH issue numbers as NNN |
+| `speckit-specify` | Create the feature spec from a description on a branch already named for an existing issue |
 | `speckit-clarify` | Ask up to 5 targeted questions and encode answers back into the spec |
 | `speckit-plan` | Generate implementation design artifacts from a spec |
 | `speckit-tasks` | Generate a dependency-ordered tasks.md from design artifacts |

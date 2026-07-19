@@ -33,10 +33,11 @@ wrong file paths, and missing verification. Always run it before decompose.
 
 **`decompose` is the default terminus** for features.
 
-**NNN numbering** uses the GitHub issue number (not sequential 001–NNN).
-GitHub issue creation is atomic — no collision risk when agents run in parallel.
+**NNN numbering** is the tracker's issue key (not sequential 001–NNN) — `speckit-specify`
+never mints one; the branch must already be named for an issue that exists.
 The branch `251-extract-api-routes` and spec dir `specs/251-extract-api-routes/`
-match the GH issue number exactly. See Part C of `speckit.specify` for details.
+match the issue key exactly (GitHub `251`, or a configured `key_pattern` like
+`PROJ-123` for other trackers). See `speckit-specify` for details.
 
 ### Pre-decompose Checklist
 
