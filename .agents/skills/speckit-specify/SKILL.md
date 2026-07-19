@@ -1,6 +1,6 @@
 ---
 name: 'speckit-specify'
-description: 'Create or update the feature specification from a natural language feature description. Requires an existing branch named {issue-key}-{slug} for an issue that already exists in the configured tracker — never creates one.'
+description: 'Create or update the feature specification from a natural language feature description. Requires an existing branch named {key}-{slug} for an issue that already exists in the configured tracker — never creates one.'
 compatibility: 'Requires spec-kit project structure with .specify/templates/ and wfctl'
 ---
 
@@ -51,7 +51,7 @@ Given that feature description, do this:
 
 1. **Confirm the branch already carries a real issue key.** This workflow never
    creates an issue or mints a feature number — the branch must already be
-   named `{issue-key}-{slug}` for an issue that exists in the tracker (e.g. a
+   named `{key}-{slug}` for an issue that exists in the tracker (e.g. a
    worktree tool created it from an existing GitHub issue or Jira ticket
    before you ran `/speckit.specify`).
 
@@ -67,7 +67,7 @@ Given that feature description, do this:
    - If it prints a real key → continue to step 2.
    - If it prints `#unknown` → **stop**. Tell the user: "This branch isn't
      named after an existing issue. Create or check out a branch named
-     `{issue-key}-{short-name}` for an issue that already exists in the
+     `{key}-{short-name}` for an issue that already exists in the
      tracker, then re-run `/speckit.specify`." Do not invent a number or
      create an issue to work around this.
 
@@ -222,7 +222,7 @@ Given that feature description, do this:
 
    Also remind the user of the branch's role in the delivery workflow:
 
-   > **Planning branch convention**: `{issue-key}-{feature-name}` is a **planning branch** — it will become a lightweight planning PR (`specs/{issue-key}-{feature-name}/` only, no code) that merges to `dev` before any implementation begins. Implementation branches are created off `dev` after that planning PR merges.
+   > **Planning branch convention**: `{key}-{feature-name}` is a **planning branch** — it will become a lightweight planning PR (`specs/{key}-{feature-name}/` only, no code) that merges to `dev` before any implementation begins. Implementation branches are created off `dev` after that planning PR merges.
    >
    > **One PR = one issue.** When the implementation PR merges, reconcile the tracker (`wfctl issue view`/`close`, backend-agnostic — `end-session` does this automatically). If the feature is too large for one PR, flag it during `/speckit.decompose` — do not pre-split; discuss first.
 
