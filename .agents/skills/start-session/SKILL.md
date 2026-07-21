@@ -28,18 +28,20 @@ memory of it — load them before doing anything else.
    git status --short
    ```
 
-4. Check open work via the configured issue tracker:
+4. Check open work via the configured backends:
    ```bash
-   wfctl issue list
+   wfctl issue list     # open issues (scoped to you if the tracker sets {me})
+   wfctl change list     # open PRs / patchsets (your changes under review)
    ```
-   This runs the active backend's list command (GitHub, Jira, or a custom one).
-   If no tracker is configured it prints a notice and no-ops — skip this step.
+   Each runs the active backend's list command (GitHub, Jira, Gerrit, or a custom
+   one). If a backend isn't configured — or doesn't implement the verb — it prints
+   a notice and no-ops, so skip whatever comes back empty.
 
 5. Report status to the user:
    - Current pipeline step (from `current.md`)
    - Last session's focus and its **Next Session TODO** (from `session-summary.md`)
    - Commits on this branch + any uncommitted changes
-   - Open issues
+   - Open issues and open changes (PRs / patchsets)
 
 6. Ask: "What are we working on today?" — defaulting to the top item from the last
    session's Next Session TODO if there was one.
