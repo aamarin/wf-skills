@@ -30,6 +30,39 @@ are substituted per-token from the CLI options, so free text like a comment body
 is always one inert argument — no shell injection, no quoting to get right.
 Substitution is within-token, so `"--{action}-label"` becomes `--add-label`.
 
+## Optional: `changes` (PRs / patchsets)
+
+`wfctl change` lists/views code changes through a **parallel `changes` section**,
+so PRs (GitHub) and patchsets (Gerrit) share one abstraction. Same argv-list
+rules; two verbs:
+
+| Verb   | Meaning              | Params |
+|--------|----------------------|--------|
+| `list` | list open changes    | (none) |
+| `view` | show one change      | `{id}` |
+
+```json
+"changes": {
+  "list": ["gh", "pr", "list", "--state", "open", "--author", "{me}"],
+  "view": ["gh", "pr", "view", "{id}"]
+}
+```
+Gerrit example — `"list": ["ssh","gerrit","gerrit","query","status:open","owner:{me}"]`.
+Omit the whole section if the backend has no change concept.
+
+## Optional: `identity` and `{me}`
+
+To scope a `list` (issues or changes) to the current user, set a top-level
+`identity` string and use `{me}` in the command. wfctl fills `{me}` from
+`identity` for every verb. Each backend keys on what it needs:
+
+```json
+"identity": "@me"        // GitHub: @me · Gerrit: "self" or your email
+```
+`"--author", "{me}"` → `--author @me`; `"owner:{me}"` → `owner:self`. A command
+that uses `{me}` with no `identity` set errors — so set it whenever any command
+references `{me}`.
+
 ## Optional: `key_pattern`
 
 wfctl derives the issue key from the branch name (`{key}-{slug}`) to label the
