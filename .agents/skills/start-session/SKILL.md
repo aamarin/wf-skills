@@ -37,11 +37,26 @@ memory of it — load them before doing anything else.
    one). If a backend isn't configured — or doesn't implement the verb — it prints
    a notice and no-ops, so skip whatever comes back empty.
 
-5. Report status to the user:
+5. **Check alignment** — does the branch's work match what's tracked? Correlate
+   the commits (step 3) with the open issues/changes (step 4). It's a heads-up
+   read, not an audit or a gate:
+   - **Aligned** — a commit references an issue/change (`#N`, `Closes #N`, or a
+     tracker key like `PROJ-123`). Nothing to flag.
+   - **Likely done** — an open issue whose work the commits appear to complete.
+     Flag it to close (`wfctl issue view <id>` to confirm), don't close it yourself.
+   - **Untracked** — committed work (especially new feature files) that matches no
+     open issue. Surface it so the user decides: open an issue, fold it into an
+     existing one, or leave it (infra / one-off).
+
+   Only surface the non-aligned items. If everything lines up, say so in one line
+   and move on.
+
+6. Report status to the user:
    - Current pipeline step (from `current.md`)
    - Last session's focus and its **Next Session TODO** (from `session-summary.md`)
    - Commits on this branch + any uncommitted changes
    - Open issues and open changes (PRs / patchsets)
+   - **Alignment**: aligned, or the likely-done / untracked items from step 5
 
-6. Ask: "What are we working on today?" — defaulting to the top item from the last
+7. Ask: "What are we working on today?" — defaulting to the top item from the last
    session's Next Session TODO if there was one.
