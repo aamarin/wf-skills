@@ -9,6 +9,12 @@ compatibility: 'Requires wfctl to be installed'
 You are ending the current development session. Produce a handoff good enough
 that a fresh session (after `/clear`) can resume from the artifacts alone.
 
+**Run every step below — do not stop at `wfctl end`.** Step 3 only writes an
+*empty scaffold*; the session isn't ended until the summary is filled with real
+data (step 4). Steps 1–4 and 7 are mandatory; steps 5–6 must be *offered* to the
+user, who decides whether to commit and update the tracker. A scaffold left
+unfilled is a failed handoff.
+
 ## Workflow
 
 1. **Capture the end timestamp** (used in the summary header; also the window for
@@ -66,11 +72,18 @@ that a fresh session (after `/clear`) can resume from the artifacts alone.
    - {anything blocking, or "None"}
    ```
 
-5. **Commit** any uncommitted work with a clear message referencing the active
-   issue (include your tracker's close keyword if it has one, e.g. GitHub
-   `Closes #N` — step 6 verifies and closes regardless).
+   **CRITICAL:** Fill every field with the actual data from step 2's scan — never
+   leave `(fill in)` or template placeholders. No commits this session → "No
+   commits." No blockers → "None."
 
-6. **Reconcile the issue tracker** (skip silently if no tracker is configured or a
+5. **Ask before committing.** If step 2 showed uncommitted changes, ask the user:
+   "Commit these with a message referencing the active issue?" On yes, commit with
+   a clear message (include your tracker's close keyword if it has one, e.g. GitHub
+   `Closes #N`). On no, leave them as-is and note it in the report.
+
+6. **Ask before touching the tracker.** Ask the user: "Update the issue tracker —
+   close it (work complete), add a progress comment (partial), or skip?" Act on
+   their choice with `wfctl issue` (skip silently if no tracker is configured or a
    verb is unsupported — `wfctl issue` no-ops in both cases). The branch's issue
    key is already known — `wfctl status` prints it. Verbs are backend-agnostic
    (GitHub, Jira, or a custom tracker):
@@ -92,6 +105,11 @@ that a fresh session (after `/clear`) can resume from the artifacts alone.
    wfctl issue create --title "<title>" --body "<context>"
    ```
 
-7. **Report:** session closed, summary written, tracker updates made, next steps,
-   any blockers. If ending because context is filling, remind the user they can
-   `/clear` and `/start-session` to resume from the summary.
+7. **Report:** session closed, summary written, whether the work was committed and
+   the tracker updated (per the user's choices in 5–6), next steps, any blockers.
+   If ending because context is filling, remind the user they can `/clear` and
+   `/start-session` to resume from the summary.
+
+**Before reporting done:** confirm `session-summary.md` has real content (no
+`(fill in)` placeholders) and that steps 5–6 were offered to the user. If the
+summary is still a scaffold, you haven't finished — go back to step 4.
