@@ -12,8 +12,15 @@ memory of it — load them before doing anything else.
 
 ## Workflow
 
-1. Run `wfctl start` to initialize agent session context and infer the current
-   pipeline step.
+1. **Initialize and check freshness:**
+   ```bash
+   wfctl start     # init session context, infer the current pipeline step
+   wfctl doctor    # is the wfctl tool / installed skills up to date?
+   ```
+   `wfctl doctor` reports green ✓ current · cyan ⬆ upgrade available. Surface
+   anything behind as a one-line heads-up in the report — the user decides whether
+   to update now (`uv tool install --upgrade …` for the tool, `wfctl
+   install-skills` for skills). Not a blocker.
 
 2. **Load the handoff artifacts** from the state dir (`$(wfctl state-dir)`):
    - `current.md` — the resume point (issue, status, step, next action).
@@ -52,6 +59,7 @@ memory of it — load them before doing anything else.
    and move on.
 
 6. Report status to the user:
+   - **Freshness**: anything `wfctl doctor` flagged as behind (tool / skills), or omit if all current
    - Current pipeline step (from `current.md`)
    - Last session's focus and its **Next Session TODO** (from `session-summary.md`)
    - Commits on this branch + any uncommitted changes
