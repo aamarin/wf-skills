@@ -20,6 +20,11 @@ workflow.
 
 **Issue title format:** `[{NNN}] {feature or PR outcome}`
 
+**Worktree base:** the issue's own worktree branches straight off the target
+branch, same as any standalone issue. There's no parent epic and no planning
+branch to inherit from — the "Epic Planning Branch as Worktree Base" convention
+under Pattern 4 does not apply here.
+
 **Example:** 13 tasks → 1 issue → 1 PR.
 
 ---
@@ -42,6 +47,10 @@ workflow.
 
 Each issue closes with its own PR. If a parent epic issue exists, the final PR may
 also close the parent after all child issues are complete.
+
+**Worktree base:** if a parent epic issue exists, use the "Epic Planning Branch as
+Worktree Base" convention documented under Pattern 4 — it applies to any pattern
+with a parent epic + child issues, not just the Hierarchical structure.
 
 ---
 
@@ -92,6 +101,41 @@ Parent issue (#251): umbrella, stays open until all PRs merge
 
 The parent close is allowed only on the final PR and only when the parent issue's
 acceptance criteria are fully satisfied.
+
+### Epic Planning Branch as Worktree Base
+
+When `brainstorm`→`decompose` ran on a dedicated planning branch (the branch
+`spec.md`/`plan.md`/`tasks.md`/`delivery.md` live on — typically the parent issue's
+own branch, e.g. `251-extract-api-routes`), branch each child issue's worktree from
+**that planning branch**, not from the target branch. This carries `specs/{feature}/`
+along automatically, so the child PR's automated review (e.g. GitHub Copilot) can
+check the implementation against spec/plan/contracts with no manual file copying:
+
+```
+wm add {child-issue}-{slug} --base {epic-planning-branch}
+```
+
+`specs/{feature}/` stays committed on the child branch for the life of its PR — it
+is never deleted with a commit. At merge time, remove it from what actually lands
+in the target branch by unstaging it out of the merge rather than committing its
+removal, so the target branch never receives the spec directory even transiently:
+
+```
+git merge --squash <child-branch>
+git reset -- specs/{feature}
+git commit
+```
+
+Once the child branch merges, its worktree is normally deleted along with it —
+which would otherwise take the on-disk `specs/{feature}/` copy with it. Use
+workmux's `pre_remove` lifecycle hook (the same mechanism it documents for backing
+up gitignored files before cleanup) to persist that state locally first, e.g.
+copying it back into the main worktree's `specs/` directory, so the spec artifacts
+survive after the child worktree and branch are gone.
+
+The planning branch itself never merges to the target branch — it carries no
+production code, only planning artifacts. Delete it once every child issue has
+merged.
 
 ---
 
