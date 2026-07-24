@@ -142,6 +142,10 @@ issue. **Never close multiple issues from one PR.**
 - Story-grouped (N issues → 1 PR) — creates tracking ambiguity; hard to see what's done
 - Task-per-issue (N issues = N tasks) — issue noise; tasks belong in the issue body, not as separate issues
 
+**Issue key format**: the Issue Grouping Map's `Issue` column must lead with the
+tracker's native key exactly as returned (GitHub `#251`; other trackers per their
+`key_pattern`, e.g. `PROJ-123`, no `#`). See `assets/delivery-plan-template.md`.
+
 ---
 
 ## Parallelization Opportunities

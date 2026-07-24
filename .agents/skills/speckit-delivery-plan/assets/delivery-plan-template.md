@@ -23,11 +23,18 @@ satisfied, add the parent close separately: `{Closes #{parent}}`.
 
 ## Issue Grouping Map
 
+The **Issue** column must lead with the tracker's native key exactly as returned
+— no other format. GitHub: `#251`. Other trackers (per their `key_pattern` in
+`.agents/trackers/<name>.json`): e.g. `PROJ-123`, no `#` prefix. Tooling that
+reconciles pipeline state against this table (e.g. an epic sub-issue resolving
+its inherited spec dir) regex-matches on this key, so a consistent leading
+position matters more than the label that follows it.
+
 | Issue | Tasks | Title | Estimate | Closes With |
 |-------|-------|-------|----------|-------------|
-| Issue A | {task IDs} | `[{NNN}] {group description}` | {estimate} | PR #{N} |
-| Issue B | {task IDs} | `[{NNN}] {group description}` | {estimate} | PR #{N} |
-| Issue C | {task IDs} | `[{NNN}] {group description}` | {estimate} | PR #{N} |
+| {issue-key} (Issue A) | {task IDs} | `[{NNN}] {group description}` | {estimate} | PR #{N} |
+| {issue-key} (Issue B) | {task IDs} | `[{NNN}] {group description}` | {estimate} | PR #{N} |
+| {issue-key} (Issue C) | {task IDs} | `[{NNN}] {group description}` | {estimate} | PR #{N} |
 
 **Grouping pattern**: {Single issue / Sub-feature split / Phase-grouped / Hierarchical / 1:1 explicit}
 **Rationale**: {One sentence explaining the pattern choice}
