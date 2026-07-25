@@ -5,6 +5,7 @@ handoffs:
   - label: Begin Implementation
     agent: speckit.implement
     prompt: Implement the delivery plan
+allowed-tools: Read Glob
 ---
 
 ## User Input

@@ -5,6 +5,7 @@ handoffs:
   - label: Build Technical Plan
     agent: speckit.plan
     prompt: Create a plan for the spec. I am building with...
+allowed-tools: Read Glob Bash(.specify/scripts/bash/check-prerequisites.sh*)
 ---
 
 ## User Input

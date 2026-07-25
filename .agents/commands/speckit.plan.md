@@ -9,6 +9,7 @@ handoffs:
   - label: Create Checklist
     agent: speckit.checklist
     prompt: Create a checklist for the following domain...
+allowed-tools: Read Glob
 ---
 
 ## User Input

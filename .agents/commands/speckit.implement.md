@@ -1,6 +1,7 @@
 ---
 disable-model-invocation: true
 description: Execute the implementation plan by processing and executing all tasks defined in tasks.md
+allowed-tools: Read Glob Bash(.specify/scripts/bash/check-prerequisites.sh*) Bash(git rev-parse*)
 ---
 
 ## User Input

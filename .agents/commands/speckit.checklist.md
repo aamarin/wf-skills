@@ -1,6 +1,7 @@
 ---
 disable-model-invocation: true
 description: Generate a custom checklist for the current feature based on user requirements.
+allowed-tools: Read Glob Bash(.specify/scripts/bash/check-prerequisites.sh*)
 ---
 
 ## User Input
