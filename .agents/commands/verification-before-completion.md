@@ -1,4 +1,5 @@
 ---
+disable-model-invocation: true
 description: About to claim work is complete, fixed, or passing — run verification and confirm output before making any success claim.
 ---
 

@@ -1,4 +1,5 @@
 ---
+disable-model-invocation: true
 description: Received code review feedback that seems unclear or technically questionable — verify it technically before implementing, don't just agree.
 ---
 

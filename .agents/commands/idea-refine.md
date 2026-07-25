@@ -1,4 +1,5 @@
 ---
+disable-model-invocation: true
 description: Refine a vague idea into a sharp, actionable concept through structured divergent and convergent thinking.
 ---
 

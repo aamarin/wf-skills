@@ -1,4 +1,5 @@
 ---
+disable-model-invocation: true
 description: Implementation is complete and tests pass — decide how to integrate the work (merge, PR, or cleanup).
 ---
 

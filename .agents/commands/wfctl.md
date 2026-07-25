@@ -1,4 +1,5 @@
 ---
+disable-model-invocation: true
 description: Reference for wfctl's full command surface — use when you need a command the session/speckit skills don't already call for you.
 ---
 

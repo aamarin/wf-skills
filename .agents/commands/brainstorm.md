@@ -1,4 +1,5 @@
 ---
+disable-model-invocation: true
 description: Start a brainstorming session. Wraps superpowers:brainstorming + idea-refine and writes the result to .agent/spec.md for speckit pickup.
 handoffs:
   - label: Start Specify
