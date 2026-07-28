@@ -21,6 +21,7 @@ tolerate the extra Claude-specific fields fine.)
 | Skill | Description |
 |-------|-------------|
 | `start-session` | Initialize wfctl session state, infer the pipeline step, report open work |
+| `i-have-adhd` | Output style for an ADHD reader — next action first, numbered steps, state restated each turn. Auto-activated by `start-session`; `/i-have-adhd` turns it on mid-session, "stop adhd mode" turns it off |
 | `end-session` | Summarize the session, close wfctl state, surface uncommitted work |
 | `using-wfctl` | Reference for wfctl's full command surface — use when you need a command the other skills don't already call for you |
 
