@@ -6,13 +6,21 @@ description: 'Read pipeline state after a speckit step completes, then auto-adva
 ## Steps
 
 0. **Epic-inherited spec check** — run before trusting wfctl's own inference.
-   `wfctl`'s `resolve_spec_dir` only matches `specs/<current-branch>/` exactly, so
-   a sub-issue worktree branched from an epic (per that epic's `delivery.md` →
-   `speckit-delivery-plan`'s "Epic Planning Branch as Worktree Base" convention)
-   has no spec dir under its own branch name — `wfctl status`/`resume` will
-   always report "no spec dir found" and default to `brainstorm`, even when the
-   epic's spec/plan/tasks/decompose are already committed and this sub-issue is
-   mid- or post-implementation.
+   A sub-issue worktree has no spec dir under its own branch name, so
+   `wfctl status`/`resume` can report "no spec dir found" and default to
+   `brainstorm` even when the epic's spec/plan/tasks/decompose are done and this
+   sub-issue is mid- or post-implementation.
+
+   `wfctl` closes part of this gap itself: `resolve_spec_dir` tries the exact
+   branch dir, then a key glob, then the same lookup against each ancestor branch
+   nearest-first. **Do not delete this step on the strength of that.** It only
+   fires when the sub-issue branch is a git descendant of the epic's planning
+   branch, which requires `--base {epic-planning-branch}` at worktree creation
+   (`speckit-delivery-plan`'s "Epic Planning Branch as Worktree Base"). A repo
+   whose worktree tool bases every branch on the trunk, or that keeps `specs/`
+   untracked so the directory must be copied in by hand, never satisfies that —
+   and the check below resolves both cases, because it matches on the issue key
+   in `delivery.md` rather than on branch ancestry.
 
    Check: does `specs/<current-branch>/` exist? If not:
    - Resolve the active tracker's key format: read `key_pattern` from whichever

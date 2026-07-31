@@ -39,6 +39,26 @@ position matters more than the label that follows it.
 **Grouping pattern**: {Single issue / Sub-feature split / Phase-grouped / Hierarchical / 1:1 explicit}
 **Rationale**: {One sentence explaining the pattern choice}
 
+### Getting this spec into a sub-issue worktree
+
+{Omit this section for a single-issue grouping.}
+
+Create each sub-issue worktree with `--base {epic-planning-branch}` ("Epic
+Planning Branch as Worktree Base"). That carries `specs/{NNN}-{feature-name}/`
+across and makes the branch a git descendant of the epic, which is what lets
+`wfctl`'s own ancestor-branch lookup resolve this spec dir.
+
+**If `specs/` is untracked in this repo, or the worktree tool bases every branch
+on the trunk, copy `specs/{NNN}-{feature-name}/` into the new worktree by hand.**
+`--base` conveys branch ancestry, not untracked files, and a fresh worktree is a
+clean checkout — so neither route delivers a directory that was never committed.
+`speckit-orchestrate` step 0 resolves the copy either way: it globs
+`specs/*/delivery.md`, matches the branch's issue key against the table above,
+and takes that row's `Tasks` column as the sub-issue's range.
+
+Skip the copy and `wfctl status` reports `brainstorm` for a story that is fully
+planned. That is the symptom; this is the cause.
+
 ---
 
 ## Parallelization Waves
