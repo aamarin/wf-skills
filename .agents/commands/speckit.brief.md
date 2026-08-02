@@ -1,6 +1,6 @@
 ---
 disable-model-invocation: true
-description: Generate a per-task agent brief (.agent-runs/brief.md) from the active GitHub Issue or JIRA ticket. Scopes this agent to the task with hard stops and escalation criteria.
+description: Generate a per-task agent brief (.agent/brief.md) from the active GitHub Issue or JIRA ticket. Scopes this agent to the task with hard stops and escalation criteria.
 handoffs:
   - label: Start Working
     agent: init
