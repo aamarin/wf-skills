@@ -1,4 +1,4 @@
-# GitHub Issue Template for `/speckit.taskstoissues`
+# GitHub Issue Template for `/speckit.decompose`
 
 Use this template when converting `tasks.md` items into GitHub issues.
 

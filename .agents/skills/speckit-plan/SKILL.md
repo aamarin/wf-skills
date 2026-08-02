@@ -145,7 +145,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Skip if project is purely internal (build scripts, one-off tools, etc.)
 
 3. **Agent context update**:
-   - Write the active feature plan summary to `.agent-runs/brief.md`
+   - Write the active feature plan summary to `.agent/brief.md`
 
 **Output**: data-model.md, /contracts/\*, quickstart.md, updated agent context file
 
