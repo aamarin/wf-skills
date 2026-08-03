@@ -51,7 +51,23 @@ pre_create:
 #     sed -i '' "s|^PORT=.*|PORT=${ISSUE}|" "$WM_WORKTREE_PATH/.env"
 #     exit 0
 
-pre_remove: []
+# specs/ and .agent/ are gitignored, so removing the worktree destroys the spec,
+# plan, tasks and analysis with it. `wfctl archive-story` copies them into
+# wfctl's per-branch state dir — flattened, numbered in pipeline order, with a
+# generated index — so the story stays readable after the worktree is gone. It is
+# a forensic snapshot, not a restorable tree.
+#
+# `command -v` guards a checkout without wfctl on PATH: a teardown hook must
+# never be the thing that stops a worktree from being removed. The subcommand
+# exits 0 on every internal failure for the same reason, so `|| true` is
+# belt-and-braces rather than the only guard.
+#
+# Note this replaces workmux's own default, which auto-detects Node.js projects
+# and fast-deletes node_modules. `pre_remove: []` had already given that up — an
+# empty list is an explicit opt-out, not an absent default — so nothing is lost
+# here that a seeded repo still had.
+pre_remove:
+  - command -v wfctl >/dev/null && wfctl archive-story "$WM_WORKTREE_PATH" "$WM_HANDLE" || true
 
 #-------------------------------------------------------------------------------
 # Files
