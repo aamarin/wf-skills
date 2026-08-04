@@ -170,7 +170,7 @@ Execution steps:
      - User signals completion ("done", "good", "no more"), OR
      - You reach 5 asked questions.
    - Never reveal future queued questions in advance.
-   - If no valid questions exist at start, immediately report no critical ambiguities.
+   - If no valid questions exist at start, write the empty-scan `## Clarifications` section per the behavior rule below, then report no critical ambiguities.
 
 5. Integration after EACH accepted answer (incremental update approach):
    - Maintain in-memory representation of the spec (loaded once at start) plus the raw file contents.
@@ -191,7 +191,7 @@ Execution steps:
    - Keep each inserted clarification minimal and testable (avoid narrative drift).
 
 6. Validation (performed after EACH write plus final pass):
-   - Clarifications session contains exactly one bullet per accepted answer (no duplicates).
+   - Clarifications session contains exactly one bullet per accepted answer (no duplicates), or the single `- No critical ambiguities detected.` bullet when the scan asked nothing.
    - Total asked (accepted) questions ≤ 5.
    - Updated sections contain no lingering vague placeholders the new answer was meant to resolve.
    - No contradictory earlier statement remains (scan for now-invalid alternative choices removed).
@@ -210,12 +210,12 @@ Execution steps:
 
 Behavior rules:
 
-- If no meaningful ambiguities found (or all potential questions would be low-impact), respond: "No critical ambiguities detected worth formal clarification." and suggest proceeding.
+- If no meaningful ambiguities found (or all potential questions would be low-impact), still record that the scan ran: add the `## Clarifications` section (with today's `### Session YYYY-MM-DD` subheading) carrying the single bullet `- No critical ambiguities detected.`, write the spec back, then respond: "No critical ambiguities detected worth formal clarification." and suggest proceeding. The section is what marks clarify done — a clean scan that writes nothing is indistinguishable from never having run, and the pipeline will keep routing back here.
 - If spec file missing, instruct user to run `/speckit.specify` first (do not create a new spec here).
 - Never exceed 5 total asked questions (clarification retries for a single question do not count as new questions).
 - Avoid speculative tech stack questions unless the absence blocks functional clarity.
 - Respect user early termination signals ("stop", "done", "proceed").
-- If no questions asked due to full coverage, output a compact coverage summary (all categories Clear) then suggest advancing.
+- If no questions asked due to full coverage, write the empty-scan `## Clarifications` section as above, output a compact coverage summary (all categories Clear), then suggest advancing.
 - If quota reached with unresolved high-impact categories remaining, explicitly flag them under Deferred with rationale.
 
 Context for prioritization: $ARGUMENTS
