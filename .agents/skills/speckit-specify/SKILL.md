@@ -15,39 +15,39 @@ Given that feature description, do this:
     Check for an upstream design artifact before generating anything:
 
     ```
-    if .agent/spec.md exists:
+    if specs/<branch>/design.md exists:
       → brainstorming artifact found; proceed to step 0
     else:
       → no brainstorming artifact found
       → prompt user:
-          "No brainstorming artifact found at .agent/spec.md.
+          "No brainstorming artifact found at specs/<branch>/design.md.
            For best results, run design work first:
-             /superpowers:brainstorming  — requirements + design exploration
-           It writes to .agent/spec.md; speckit picks it up automatically.
+             /speckit.brainstorm  — requirements + design exploration
+           It writes to specs/<branch>/design.md; speckit picks it up automatically.
 
            Proceed with just the feature description anyway? (yes/no)"
       → if yes: proceed with description only (step 0 will skip)
       → if no: stop here; user will run brainstorming first
     ```
 
-0. **Load pre-specify context from `.agent/spec.md` (if present)**
+0. **Load pre-specify context from `specs/<branch>/design.md` (if present)**
 
    Before generating anything, check for a design document from an upstream brainstorming
    or design skill session:
 
    ```
-   if .agent/spec.md exists:
+   if specs/<branch>/design.md exists:
      → load it as additional context for spec generation
      → treat it as the detailed design intent; the user-typed description is supplemental
-     → the formal spec.md should faithfully reflect decisions already made in .agent/spec.md
-     → note in the spec's Assumptions section: "Pre-specify design context loaded from .agent/spec.md"
+     → the formal spec.md should faithfully reflect decisions already made in design.md
+     → note in the spec's Assumptions section: "Pre-specify design context loaded from specs/<branch>/design.md"
    else:
      → proceed with user-typed description only
    ```
 
-   `.agent/spec.md` is the canonical handoff contract from any upstream design skill —
-   superpowers brainstorming or any other domain skill. All of them write to
-   `.agent/spec.md`; speckit picks it up here regardless of which skill produced it.
+   `specs/<branch>/design.md` is the canonical handoff contract from any upstream design
+   skill — `brainstorming` or any other domain skill. All of them write to
+   `specs/<branch>/design.md`; speckit picks it up here regardless of which skill produced it.
 
 1. **Confirm the branch already carries a real issue key.** This workflow never
    creates an issue or mints a feature number — the branch must already be
