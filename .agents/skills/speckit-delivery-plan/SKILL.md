@@ -20,12 +20,12 @@ This is the enforced order. Do not skip steps.
 ```
 brainstorm → specify → clarify → plan → tasks → analyze → decompose
      ↓          ↓         ↓        ↓       ↓        ↓          ↓
-.agent/     spec.md  clarified plan.md tasks.md quality  delivery.md
-spec.md              spec.md                    gate     + GH issues
+design.md   spec.md  clarified plan.md tasks.md quality  delivery.md
+                     spec.md                    gate     + GH issues
 ```
 
-**`brainstorm` is the recommended entry point** — run `/superpowers:brainstorming`
-before `specify`. It writes to `.agent/spec.md`; `specify` picks it up
+**`brainstorm` is the recommended entry point** — run `/speckit.brainstorm`
+before `specify`. It writes to `specs/<branch>/design.md`; `specify` picks it up
 automatically (step -1 gate).
 
 **`analyze` is mandatory** — it is the quality gate that catches numbering bugs,
