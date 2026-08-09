@@ -6,22 +6,22 @@ handoffs:
     agent: speckit.specify
     prompt: The design document is ready in specs/<branch>/design.md. Run specify.
     send: true
+allowed-tools: Read Glob Write Bash(wfctl feature-paths*) Bash(mkdir*) Bash(git log*)
 ---
 
 Read `AGENTS.md` at the repository root for project overrides. It is optional —
 if the file is absent, proceed silently. Then invoke and follow the
 `brainstorming` skill exactly.
 
-Create the destination directory. `<branch>` below is a placeholder — resolve it
-from the current branch rather than writing it literally:
+Create the destination directory:
 
 ```bash
-eval "$(wfctl feature-paths)"
-mkdir -p "$FEATURE_DIR"
+wfctl feature-paths      # prints FEATURE_DIR='…/specs/<current-branch>'
 ```
 
-`$FEATURE_DIR` is this branch's spec directory; the design document is
-`$FEATURE_DIR/design.md`.
+Read `FEATURE_DIR` from that output and `mkdir -p` it. Substitute the real path —
+`<branch>` in this file is a placeholder, never a directory name. The design
+document is `design.md` inside that directory.
 
 After the brainstorming session concludes, invoke the `idea-refine` skill to
 sharpen the chosen direction into an actionable one-pager.

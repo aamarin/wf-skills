@@ -29,7 +29,10 @@ bash skills/idea-refine/scripts/idea-refine.sh
 
 ## Output
 
-The final output is a markdown one-pager saved to `specs/<branch>/design.md` (after user confirmation), containing:
+The final output is a markdown one-pager saved to `design.md` in the branch's
+spec directory (after user confirmation). `wfctl feature-paths` prints that
+directory as `FEATURE_DIR` — resolve it from there rather than writing
+`<branch>` literally. It contains:
 - Problem Statement
 - Recommended Direction
 - Key Assumptions
@@ -137,7 +140,9 @@ Produce a concrete artifact — a markdown one-pager that moves work forward:
 
 **The "Not Doing" list is arguably the most valuable part.** Focus is about saying no to good ideas. Make the trade-offs explicit.
 
-Ask the user if they'd like to save this to `specs/<branch>/design.md` (or a location of their choosing). Only save if they confirm.
+Ask the user if they'd like to save this to `$FEATURE_DIR/design.md` — the
+branch's spec directory, printed by `wfctl feature-paths` — or a location of
+their choosing. Only save if they confirm.
 
 When invoked from `/speckit.brainstorm`, this is the single write of that file — the upstream brainstorming output was carried here in context, not saved first.
 
