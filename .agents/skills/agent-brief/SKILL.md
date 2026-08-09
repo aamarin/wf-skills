@@ -15,7 +15,7 @@ A brief is a **task-specific constraint file** that scopes a headless agent to a
 
 ## Location
 
-`.agent/brief.md` in the worktree root. This file is gitignored — it is runtime state, not source code.
+`specs/<branch>/brief.md`, alongside the rest of that branch's pipeline artifacts. This file is gitignored — it is runtime state, not source code.
 
 ## Format
 
@@ -33,7 +33,7 @@ Files and directories this agent may read and modify:
 - client/src/views/admin/**
 - server/src/routes/admin.ts
 
-## Off-limits (hard stop — write .agent/checkpoint.md and wait for human)
+## Off-limits (hard stop — write specs/<branch>/escalation.md and wait for human)
 - Schema changes (ZenStack workflow — TDR-043)
 - Deleting or modifying existing tests
 - Files outside Scope above
@@ -43,7 +43,7 @@ Files and directories this agent may read and modify:
 - pnpm type-check passes (no errors)
 - pnpm test:unit passes (all green, none deleted)
 
-## Escalate when (write checkpoint, set needs-human: yes)
+## Escalate when (write escalation.md, set needs-human: yes)
 - Unsure which TDR governs an architectural decision
 - Touching > 2 files outside declared Scope
 - Test suite was passing and now fails for unknown reason
@@ -54,16 +54,31 @@ Files and directories this agent may read and modify:
 - TDR-038: Auth patterns
 ```
 
+## Generation
+
+`/speckit.brief` produces the file:
+
+1. Read the active issue from the tracker — `wfctl issue view <id>`.
+2. Fill the format above from it: Scope from the issue's entry points, Done-when
+   from its acceptance criteria, Off-limits and Escalate-when from its stated
+   constraints.
+3. Create the branch's spec directory if absent, then write `brief.md` inside it.
+   `wfctl feature-paths` prints it as `FEATURE_DIR` — resolve it from there
+   rather than writing `<branch>` literally.
+
+That is the only write of the brief. No other skill or command may write that
+path — a second writer destroys the scope contract the agent is operating under.
+
 ## Rules for Agents
 
 - Read this file at session start before touching any code
-- If any action would violate Off-limits: stop, write checkpoint with `needs-human: yes`, explain why
-- If any Escalate-when condition triggers: write checkpoint immediately, stop working
+- If any action would violate Off-limits: stop, write `specs/<branch>/escalation.md` with `needs-human: yes`, explain why
+- If any Escalate-when condition triggers: write `specs/<branch>/escalation.md` immediately, stop working
 - Never delete or modify this file during a session
 
 ## Relationship to Project Constitution
 
-| Constitution (`.claude/constitution.md`) | Brief (`.agent/brief.md`) |
+| Constitution (`.claude/constitution.md`) | Brief (`specs/<branch>/brief.md`) |
 |---|---|
 | Always active, all sessions | Active only for this task |
 | Project-wide rules | Task-specific scope + stops |
