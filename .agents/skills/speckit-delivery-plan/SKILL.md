@@ -76,9 +76,9 @@ For each task, list which files it creates or modifies. This drives PR sizing.
 
 ```
 Example matrix:
-T004 → CREATE server/src/routes/index.ts
-T005 → MODIFY server/src/index.ts
-T006 → READ ONLY (type-check)
+T004 → CREATE src/routes/index
+T005 → MODIFY src/entry-point
+T006 → READ ONLY (type or build check)
 ```
 
 **Step 3 — Apply PR boundary signals** → output PR count with rationale
@@ -174,7 +174,7 @@ tracker's native key exactly as returned (GitHub `#251`; other trackers per thei
 | "One issue per task is fine" | 13 issues for a 2-file refactor creates noise; one issue per PR is the rule |
 | "Multiple issues make it easier to track stories" | Multiple issues per PR make it harder — you can't tell what's done until all close; put stories in the issue body |
 | "We can figure out PR boundaries during implementation" | Mid-implementation PR decisions cause history rewrites and confusing reviews |
-| "analyze is optional for small features" | analyze caught a T010 count error (15 vs 14) in feature 018 — always run it |
+| "analyze is optional for small features" | analyze catches task-count and numbering errors a human reading the same file skims past — always run it |
 | "I'll skip clarify, the spec is clear enough" | Unclarified specs generate plans that need rework; clarify is the cheapest step |
 | "I don't need decompose for a simple feature" | decompose handles simple 1:1 cases too and writes delivery.md — always use it |
 

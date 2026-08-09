@@ -15,9 +15,9 @@ More NO answers → bundle everything in one PR.
 | Two groups edit the same file, but sequentially | Bundle; the second group depends on the first |
 | Two groups edit the same file concurrently | Must bundle or coordinate carefully |
 
-**Example (018 — bundle):**
-T004 creates `server/src/routes/index.ts` and T005 modifies `server/src/index.ts`.
-Different files → no conflict → bundle.
+**Example (bundle):**
+T004 creates a route-registration module and T005 modifies the entry point to call
+it. Different files → no conflict → bundle.
 
 **Example (split candidate):**
 Story A adds a new model to `schema.ts` and Story B adds a different model to `schema.ts`.
@@ -49,8 +49,9 @@ testable state?
 - Merging Story A alone leaves the codebase **broken** (TypeScript errors, missing
   imports): bundle required.
 
-**018 example:** Creating `server/src/routes/index.ts` without updating `server/src/index.ts`
-would leave the app broken (missing the import call). Not a mergeable increment → bundle.
+**Example:** Creating the route-registration module without updating the entry point
+to call it would leave the app broken — the module exists but nothing invokes it.
+Not a mergeable increment → bundle.
 
 ### Signal 4: Story Independence
 
@@ -61,7 +62,7 @@ Independent stories:
 - Touch different data models or API paths
 - Can be tested completely without the other story's code
 
-018 example:
+Example:
 - US1 (routes reachable) and US2 (developer experience) share the same code change.
   US2 literally verifies what US1 implemented. Not independent → bundle.
 
@@ -91,7 +92,7 @@ Can each story be merged independently without breaking the build?
 
 ### XS Feature (2 files) → Always single PR
 
-Feature 018: 2 files, mutually dependent.
+2 files, mutually dependent.
 Verdict: 1 PR, 1 issue.
 
 ### S Feature (4 files, 2 stories) → Usually single PR

@@ -17,36 +17,28 @@
   the iteration process.
 -->
 
-**Language/Version**: TypeScript on Node.js 20+/22+; record any feature-specific
-version constraints  
-**Primary Dependencies**: Express 5, Vue 3, ZenStack, Prisma, PostgreSQL, Zod,
-pnpm, Vitest; add feature-specific libraries only when required  
-**Storage**: PostgreSQL via ZenStack/Prisma unless the feature explicitly uses a
-different store  
-**Testing**: Vitest plus feature-appropriate integration, contract, schema, or
-UI validation commands  
-**Target Platform**: Web application with Vue client and Express server
-**Project Type**: Monorepo web application (`client/`, `server/`)  
+**Language/Version**: [language and version, or NEEDS CLARIFICATION]  
+**Primary Dependencies**: [frameworks and libraries this feature relies on; add
+feature-specific ones only when required, or NEEDS CLARIFICATION]  
+**Storage**: [database, file store, or N/A]  
+**Testing**: [test runner plus the integration, contract, schema, or UI
+validation commands this feature needs]  
+**Target Platform**: [where this runs, or NEEDS CLARIFICATION]  
+**Project Type**: [single project, web application, CLI, library, or NEEDS CLARIFICATION]  
 **Performance Goals**: [feature-specific measurable target or NEEDS CLARIFICATION]  
-**Constraints**: Workspace isolation, ZenStack policy enforcement, generated
-artifact integrity, and minimal-complexity bias  
+**Constraints**: [project-specific constraints for this feature] and
+minimal-complexity bias  
 **Scale/Scope**: [feature-specific users, domains, workflows, or NEEDS CLARIFICATION]
 
 ## Constitution Check
 
 _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
-- [ ] Workspace impact is defined: affected models, `workspaceId` boundaries,
-      and cross-workspace risk are identified.
-- [ ] Access-control impact is defined: affected ZenStack policies, audit-trail
-      expectations, and authorization boundaries are listed.
-- [ ] Schema integrity is defined: affected `.zmodel` files, tier placement,
-      `bootstrap.zmodel` impact, generation steps, and migration needs are
-      recorded.
-- [ ] Evidence exists: relevant `.claude/context/*` files, TDRs, source
-      references, or external authoritative research are cited.
-- [ ] Validation plan exists: `pnpm type-check` plus the specific automated
-      tests and checks needed for the changed surface are named.
+Add this project's gates below, derived from `.specify/memory/constitution.md` if
+it exists. If the repo has no constitution, substitute gates from its own
+documented conventions and record the substitution in Complexity Tracking — a
+gate with no source is decorative, and one borrowed from another project is false.
+
 - [ ] Complexity is justified: any added abstraction, infrastructure, or
       dependency has a measured or explicit reason the simpler path is
       insufficient.

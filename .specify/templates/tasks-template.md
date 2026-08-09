@@ -76,8 +76,7 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] T004 Setup database schema and migrations framework
 - [ ] T005 [P] Implement workspace scoping and authentication/authorization framework
 - [ ] T006 [P] Setup API routing and middleware structure
-- [ ] T007 Create base models/entities that all stories depend on, including
-      any required `server/zmodel/*.zmodel` and `bootstrap.zmodel` updates
+- [ ] T007 Create base models/entities that all stories depend on
 - [ ] T008 Configure error handling, logging, and audit-trail infrastructure
 - [ ] T009 Setup environment configuration management
 
@@ -298,12 +297,12 @@ With multiple developers:
 - [P] tasks = different files, no dependencies
 - [Story] label maps task to specific user story for traceability
 - Each user story should be independently completable and testable
-- Tasks that touch schemas or policies should mention the affected tier, policy,
+- Tasks that touch schemas or policies should mention the affected schema, policy,
   or generation step in the description
-- Tasks should reference related context docs or TDRs when that context is
-  necessary to implement or review the work correctly
-- Each story should name its done criteria, including `pnpm type-check` and the
-  relevant automated checks for that slice
+- Tasks should reference related context docs or decision records when that
+  context is necessary to implement or review the work correctly
+- Each story should name its done criteria, including the project's type or build
+  check and the relevant automated checks for that slice
 - Each story should include a concrete `Verification` block with automated and
   manual checks where applicable
 - Each implementation task should make its verification path explicit; do not

@@ -95,30 +95,7 @@ _Example of marking unclear requirements:_
 - **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
 - **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
 
-## PFMS Impact Assessment _(mandatory)_
-
-### Workspace Isolation
-
-- Describe which models, queries, caches, or workflows are workspace-scoped.
-- State whether any global records are touched and why that exception is valid.
-
-### Access Policy Impact
-
-- List the ZenStack policies, roles, or authorization paths affected.
-- State audit-trail or approval-flow implications for sensitive operations.
-
-### Schema and Bootstrap Impact
-
-- Identify any `server/zmodel/*.zmodel` files affected.
-- State the schema tier and whether `server/zmodel/bootstrap.zmodel` changes.
-- Record generation or migration expectations if the data model changes.
-
-### Related Context and Decisions
-
-- Reference relevant files from `.claude/context/`.
-- Reference applicable TDRs, research notes, or implementation specs.
-
-### Key Entities _(include if feature involves data)_
+## Key Entities _(include if feature involves data)_
 
 - **[Entity 1]**: [What it represents, key attributes without implementation]
 - **[Entity 2]**: [What it represents, relationships to other entities]
@@ -140,5 +117,5 @@ _Example of marking unclear requirements:_
 ## Validation Strategy _(mandatory)_
 
 - State the commands or checks that will prove the feature works.
-- Include `pnpm type-check` and any story-specific unit, integration, contract,
-  schema, or UI validation needed for the changed surface.
+- Include the project's type or build check and any story-specific unit,
+  integration, contract, schema, or UI validation needed for the changed surface.
