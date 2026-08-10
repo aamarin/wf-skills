@@ -87,7 +87,7 @@ spec reread:
 - Spec: `{feature_dir}/spec.md`
 - Plan: `{feature_dir}/plan.md`
 - Tasks: `{feature_dir}/tasks.md`
-- Related: `{contract, quickstart, research, TDR, or issue references as needed}`
+- Related: `{contract, quickstart, research, decision record, or issue references as needed}`
 
 ## Estimate
 
@@ -99,7 +99,7 @@ spec reread:
 - Constraint: `{important non-obvious limitation}`
 ```
 
-## PFMS Quality Rules
+## Quality Rules
 
 - Keep the first sentence human-scannable.
 - `Context` should explain why, not restate the task verbatim.

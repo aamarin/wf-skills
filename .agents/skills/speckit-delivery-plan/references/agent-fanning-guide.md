@@ -27,7 +27,7 @@ For each task pair (A, B): does B require A's output to exist?
 All tasks with no remaining dependencies = same wave.
 
 ```
-Example (018):
+Example:
 T003 (no deps)                    → Wave 0
 T001, T002 (depend on Wave 0 done) → Wave 1 [parallel]
 T004, T005 (depend on Wave 0 done) → Wave 2 [parallel]
@@ -111,40 +111,51 @@ Dispatcher: "Agents T004 and T005 — begin Wave 2"
 
 [agents work in parallel]
 
-Agent T004: "T004 complete — server/src/routes/index.ts created"
-Agent T005: "T005 complete — server/src/index.ts modified"
+Agent T004: "T004 complete — registration module created"
+Agent T005: "T005 complete — entry point modified"
 
 Dispatcher: "Both T004 and T005 complete. Running Wave 3 gate:
-             pnpm --filter server type-check"
+             the project's type or build check"
 ```
 
 ---
 
-## 018 Agent Fanning Reference
+## Worked Example: Two-Agent Wave
 
-Feature 018 is XS — single agent recommended. If fanning Wave 2 for practice:
+A small feature is usually a single-agent job. This is what fanning one wave looks
+like when it is worth doing — two agents extracting a registration module out of an
+entry point, each owning one file.
+
+The shape to copy is the **concurrent-edit constraint**: neither agent runs the
+project's check, because the other agent is mid-edit and the tree is transiently
+inconsistent. The check belongs to the fan-in gate, not to either agent.
 
 **Agent A (T004):**
 ```
-Create server/src/routes/index.ts with registerApiRoutes(app: Application): void.
-Import all 14 domain route modules from server/src/index.ts (current imports).
-Register them in order: /api/debt, /api/debts (alias), /api/bills, /api/transactions,
-/api/budgets, /api/categories, /api/payment-schedule, /api/accounts, /api/dashboard,
-/api/forecast, /api/planned-income, /api/reports, /api/scenarios, /api/tenants.
-Do NOT run type-check — Agent B is modifying index.ts simultaneously.
-Signal "T004 complete" when file is saved.
+Create the new registration module at {path to the new module}, exporting a
+single function that takes the application instance and registers every domain
+route on it.
+Import the same route modules the entry point imports today, and register them
+in the same order.
+Do NOT run the project's type or build check — Agent B is modifying the entry
+point simultaneously.
+Signal "T004 complete" when the file is saved.
 ```
 
 **Agent B (T005):**
 ```
-Modify server/src/index.ts:
-1. Remove all 14 domain route module imports (debtRoutes through tenantRoutes).
-2. Add: import { registerApiRoutes } from './routes'
-3. Replace the 14 app.use('/api/...') block with: registerApiRoutes(app)
-   Position: after app.use(attachEnhancedClient), before the Sentry conditional.
-4. Leave health routes, middleware, error handler, 404 handler, app.listen unchanged.
-Do NOT run type-check — Agent A is creating routes/index.ts simultaneously.
-Signal "T005 complete" when file is saved.
+Modify the entry point at {path to the entry point}:
+1. Remove the per-domain route module imports.
+2. Add the import for the new registration function.
+3. Replace the block of per-route registration calls with a single call to it,
+   in the same position the block occupied.
+4. Leave health routes, middleware, error handler, 404 handler, and server
+   startup unchanged.
+Do NOT run the project's type or build check — Agent A is creating the
+registration module simultaneously.
+Signal "T005 complete" when the file is saved.
 ```
 
-**After both complete:** `pnpm --filter server type-check`
+**After both complete:** run the project's type or build check as the fan-in gate.
+It is the first point at which the tree is consistent, and the first point at which
+a failure is attributable.

@@ -24,34 +24,34 @@ A brief is a **task-specific constraint file** that scopes a headless agent to a
 # or: {JIRA-TICKET} {ticket-title}
 
 tracker: github          # github | jira
-issue: 264               # GH issue number OR JIRA ticket ID (e.g., PFMS-264)
+issue: 264               # GH issue number OR JIRA ticket ID (e.g., PROJ-264)
 agent: claude            # agent assigned (informational; any agent reads same format)
 created: 2026-05-31
 
 ## Scope
 Files and directories this agent may read and modify:
-- client/src/views/admin/**
-- server/src/routes/admin.ts
+- {directory this task may modify}/**
+- {specific file this task may modify}
 
 ## Off-limits (hard stop — write specs/<branch>/escalation.md and wait for human)
-- Schema changes (ZenStack workflow — TDR-043)
+- Schema or migration changes
 - Deleting or modifying existing tests
 - Files outside Scope above
 
 ## Done when
 - Acceptance criteria in issue met
-- pnpm type-check passes (no errors)
-- pnpm test:unit passes (all green, none deleted)
+- The project's type or build check passes (no errors)
+- The unit suite passes (all green, none deleted)
 
 ## Escalate when (write escalation.md, set needs-human: yes)
-- Unsure which TDR governs an architectural decision
+- Unsure which decision record governs an architectural decision
 - Touching > 2 files outside declared Scope
 - Test suite was passing and now fails for unknown reason
 - Blocked > 20 min without progress
 
 ## Required reading (load before acting)
-- TDR-042: Workspace Architecture
-- TDR-038: Auth patterns
+- {decision record}: {the architectural decision this task must respect}
+- {decision record}: {a second, if the task spans two}
 ```
 
 ## Generation
@@ -78,7 +78,7 @@ path — a second writer destroys the scope contract the agent is operating unde
 
 ## Relationship to Project Constitution
 
-| Constitution (`.claude/constitution.md`) | Brief (`specs/<branch>/brief.md`) |
+| Constitution (`.specify/memory/constitution.md`) | Brief (`specs/<branch>/brief.md`) |
 |---|---|
 | Always active, all sessions | Active only for this task |
 | Project-wide rules | Task-specific scope + stops |
