@@ -76,8 +76,8 @@ For each task, list which files it creates or modifies. This drives PR sizing.
 
 ```
 Example matrix:
-T004 → CREATE src/routes/index
-T005 → MODIFY src/entry-point
+T004 → CREATE src/routes/index.{ext}
+T005 → MODIFY src/entry-point.{ext}
 T006 → READ ONLY (type or build check)
 ```
 

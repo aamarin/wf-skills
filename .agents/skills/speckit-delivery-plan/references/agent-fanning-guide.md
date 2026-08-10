@@ -132,8 +132,9 @@ inconsistent. The check belongs to the fan-in gate, not to either agent.
 
 **Agent A (T004):**
 ```
-Create the new registration module at <path>, exporting a single function that
-takes the application instance and registers every domain route on it.
+Create the new registration module at {path to the new module}, exporting a
+single function that takes the application instance and registers every domain
+route on it.
 Import the same route modules the entry point imports today, and register them
 in the same order.
 Do NOT run the project's type or build check — Agent B is modifying the entry
@@ -143,7 +144,7 @@ Signal "T004 complete" when the file is saved.
 
 **Agent B (T005):**
 ```
-Modify the entry point at <path>:
+Modify the entry point at {path to the entry point}:
 1. Remove the per-domain route module imports.
 2. Add the import for the new registration function.
 3. Replace the block of per-route registration calls with a single call to it,
