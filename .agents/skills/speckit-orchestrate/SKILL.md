@@ -21,19 +21,22 @@ description: 'Read pipeline state after a speckit step completes, then auto-adva
    issue key recorded in `delivery.md` rather than on branch ancestry or
    directory name.
 
-   Check: run `eval "$(wfctl feature-paths)"` and test whether `$FEATURE_DIR`
-   exists. It resolves through this repo's recorded spec root, which may be
-   outside the working tree — never assume the spec dir is inside the repo. If it
-   does not exist:
+   Check: run `wfctl feature-paths` and read `FEATURE_DIR` from that output —
+   the plain command, not `eval "$(…)"`, so the command's tool grant matches.
+   Substitute the real path everywhere below. It resolves through this repo's
+   recorded spec root, which may be outside the working tree — never assume the
+   spec dir is inside the repo. If that directory does not exist:
    - Resolve the active tracker's key format: read `key_pattern` from whichever
      `.agents/trackers/*.json` exists (default `\d+` — GitHub's bare-numeric
      default — if no tracker config or no `key_pattern` field). Build a match
      regex `#?{key_pattern}` — optional leading `#`, since GitHub issues are
      conventionally written `#123` in prose while other trackers' keys (e.g.
      `PROJ-123`) never take one.
-   - Glob `*/delivery.md` under the spec root — the parent of `$FEATURE_DIR`, so
-     the glob follows the spec root wherever it points. In each one's "Issue
-     Grouping Map" table, search
+   - Find every `delivery.md` under the spec root — the parent of `FEATURE_DIR`,
+     so the search follows the spec root wherever it points. Use `Glob` with that
+     absolute directory as its path; a spec root outside the working tree is a
+     normal case here, not an edge one. In each file's "Issue Grouping Map"
+     table, search
      every row for that regex. A row whose match equals the current issue's key
      means that `delivery.md`'s directory is the real spec dir, and the row's
      `Tasks` column is this sub-issue's task range. (Older delivery.md files may

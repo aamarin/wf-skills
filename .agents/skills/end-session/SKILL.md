@@ -114,19 +114,21 @@ unfilled is a failed handoff.
    With a spec root outside the working repo, the spec dir is somewhere the user
    never opens, so uncommitted work there is invisible:
 
+   Run `wfctl feature-paths` and read `FEATURE_DIR` from its output — the plain
+   command, not `eval "$(…)"`, so the command's tool grant matches. Substituting
+   that real path:
+
    ```bash
-   eval "$(wfctl feature-paths)"                                    # sets FEATURE_DIR
-   SPEC_REPO=$(git -C "$FEATURE_DIR" rev-parse --show-toplevel 2>/dev/null || true)
-   THIS_REPO=$(git rev-parse --show-toplevel)
+   git -C <FEATURE_DIR> rev-parse --show-toplevel   # spec dir's working tree, or fails
+   git rev-parse --show-toplevel                    # this working tree
    ```
 
-   Say nothing at all when `SPEC_REPO` is empty — the spec root is a plain
-   directory, or this branch has no spec dir, and `git -C` fails identically for
-   both — or when it equals `THIS_REPO`, since step 5 already covered that case.
+   Say nothing at all when the first command fails — the spec root is a plain
+   directory, or this branch has no spec dir, and it fails identically for both —
+   or when the two roots are equal, since step 5 already covered that case.
    Otherwise count the lines of
-   `git -C "$SPEC_REPO" status --short -- "$FEATURE_DIR"` and, if non-zero, add
-   one line to the report naming `$SPEC_REPO` and the count. Nothing else to
-   report means nothing is said.
+   `git -C <spec root> status --short -- <FEATURE_DIR>` and, if non-zero, add one
+   line to the report naming the spec root and the count.
 
    Compare the two `rev-parse` outputs, never `$FEATURE_DIR` against a toplevel
    directly — `rev-parse` resolves symlinks (on macOS `/var` → `/private/var`),
