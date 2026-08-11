@@ -115,8 +115,8 @@ unfilled is a failed handoff.
    never opens, so uncommitted work there is invisible:
 
    Run `wfctl feature-paths` and read `FEATURE_DIR` from its output — the plain
-   command, not `eval "$(…)"`, so the command's tool grant matches. Substituting
-   that real path:
+   command, not `eval "$(…)"`, which the command's pre-approval would not match,
+   costing an approval prompt every session. Substituting that real path:
 
    ```bash
    git -C <FEATURE_DIR> rev-parse --show-toplevel   # spec dir's working tree, or fails
@@ -141,9 +141,8 @@ unfilled is a failed handoff.
    them; what they cannot do is notice that a directory they never open has
    uncommitted work in it.
 
-   This fires for any *working tree* other than the current one — a separate
-   repository, or a sibling worktree on an orphan branch, which shares an object
-   store but has its own toplevel.
+   Any *working tree* other than this one qualifies, including a sibling worktree
+   on an orphan branch — it shares an object store but has its own toplevel.
 
 **Before reporting done:** confirm `session-summary.md` has real content (no
 `(fill in)` placeholders) and that steps 5–6 were offered to the user. If the

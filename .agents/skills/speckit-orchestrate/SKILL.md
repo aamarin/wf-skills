@@ -22,7 +22,8 @@ description: 'Read pipeline state after a speckit step completes, then auto-adva
    directory name.
 
    Check: run `wfctl feature-paths` and read `FEATURE_DIR` from that output —
-   the plain command, not `eval "$(…)"`, so the command's tool grant matches.
+   the plain command, not `eval "$(…)"`, which the command's pre-approval would
+   not match, costing an approval prompt on every run.
    Substitute the real path everywhere below. It resolves through this repo's
    recorded spec root, which may be outside the working tree — never assume the
    spec dir is inside the repo. If that directory does not exist:
