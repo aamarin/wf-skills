@@ -119,16 +119,21 @@ unfilled is a failed handoff.
    costing an approval prompt every session. Substituting that real path:
 
    ```bash
-   git -C <FEATURE_DIR> rev-parse --show-toplevel   # spec dir's working tree, or fails
-   git rev-parse --show-toplevel                    # this working tree
+   git -C <FEATURE_DIR> rev-parse --show-toplevel   # → SPEC_ROOT, or fails
+   git rev-parse --show-toplevel                    # → THIS_ROOT
    ```
 
-   Say nothing at all when the first command fails — the spec root is a plain
+   Call those two outputs `SPEC_ROOT` and `THIS_ROOT` and substitute them below
+   the same way you substitute `FEATURE_DIR`.
+
+   Say nothing at all when the first command fails — the spec dir is in a plain
    directory, or this branch has no spec dir, and it fails identically for both —
-   or when the two roots are equal, since step 5 already covered that case.
-   Otherwise count the lines of
-   `git -C <spec root> status --short -- <FEATURE_DIR>` and, if non-zero, add one
-   line to the report naming the spec root and the count.
+   or when `SPEC_ROOT` equals `THIS_ROOT`, since step 5 already covered that
+   case. Otherwise count the lines of
+   `git -C <SPEC_ROOT> status --short -- <FEATURE_DIR>` and, if non-zero, add one
+   line to the report naming `SPEC_ROOT` and the count. An absolute pathspec is
+   correct here: it scopes the count to this branch's spec dir and excludes any
+   sibling branch's.
 
    Compare the two `rev-parse` outputs, never `$FEATURE_DIR` against a toplevel
    directly — `rev-parse` resolves symlinks (on macOS `/var` → `/private/var`),
