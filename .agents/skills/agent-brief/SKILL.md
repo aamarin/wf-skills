@@ -51,7 +51,7 @@ Files and directories this agent may read and modify:
 
 ## Required reading (load before acting)
 - {decision record}: {the architectural decision this task must respect}
-- {decision record}: {a second, if the task spans two}
+- {decision record}: {another, if the task spans more than one}
 ```
 
 ## Generation
