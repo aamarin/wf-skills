@@ -43,21 +43,21 @@ position matters more than the label that follows it.
 
 {Omit this section for a single-issue grouping.}
 
-Create each sub-issue worktree with `--base {epic-planning-branch}` ("Epic
-Planning Branch as Worktree Base"). That carries `specs/{NNN}-{feature-name}/`
-across and makes the branch a git descendant of the epic, which is what lets
-`wfctl`'s own ancestor-branch lookup resolve this spec dir.
+Run `wfctl feature-paths` in the sub-issue worktree and read `FEATURE_DIR`. If
+this repo records a spec root outside the working tree, the epic's spec dir is
+already at a stable absolute path every worktree can read, and there is nothing
+to move.
 
-**If `specs/` is untracked in this repo, or the worktree tool bases every branch
-on the trunk, copy `specs/{NNN}-{feature-name}/` into the new worktree by hand.**
-`--base` conveys branch ancestry, not untracked files, and a fresh worktree is a
-clean checkout — so neither route delivers a directory that was never committed.
-`speckit-orchestrate` step 0 resolves the copy either way: it globs
-`specs/*/delivery.md`, matches the branch's issue key against the table above,
+**Otherwise specs live in-repo and untracked: copy `{NNN}-{feature-name}/` into
+the new worktree's spec dir by hand.** A fresh worktree is a clean checkout, so a
+directory that was never committed does not come across.
+
+Either way, `speckit-orchestrate` step 0 is what resolves it: it globs the spec
+root for `*/delivery.md`, matches the branch's issue key against the table above,
 and takes that row's `Tasks` column as the sub-issue's range.
 
-Skip the copy and `wfctl status` reports `brainstorm` for a story that is fully
-planned. That is the symptom; this is the cause.
+Skip the copy in the in-repo case and `wfctl status` reports `brainstorm` for a
+story that is fully planned. That is the symptom; this is the cause.
 
 ---
 

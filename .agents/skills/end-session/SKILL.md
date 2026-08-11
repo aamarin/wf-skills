@@ -110,6 +110,45 @@ unfilled is a failed handoff.
    If ending because context is filling, remind the user they can `/clear` and
    `/start-session` to resume from the summary.
 
+   **Also report uncommitted specs when they live in a different working tree.**
+   With a spec root outside the working repo, the spec dir is somewhere the user
+   never opens, so uncommitted work there is invisible:
+
+   Run `wfctl feature-paths` and read `FEATURE_DIR` from its output — the plain
+   command, not `eval "$(…)"`, which the command's pre-approval would not match,
+   costing an approval prompt every session. Substituting that real path:
+
+   ```bash
+   git -C <FEATURE_DIR> rev-parse --show-toplevel   # → SPEC_ROOT, or fails
+   git rev-parse --show-toplevel                    # → THIS_ROOT
+   ```
+
+   Call those two outputs `SPEC_ROOT` and `THIS_ROOT` and substitute them below
+   the same way you substitute `FEATURE_DIR`.
+
+   Say nothing at all when the first command fails — the spec dir is in a plain
+   directory, or this branch has no spec dir, and it fails identically for both —
+   or when `SPEC_ROOT` equals `THIS_ROOT`, since step 5 already covered that
+   case. Otherwise count the lines of
+   `git -C <SPEC_ROOT> status --short -- <FEATURE_DIR>` and, if non-zero, add one
+   line to the report naming `SPEC_ROOT` and the count. An absolute pathspec is
+   correct here: it scopes the count to this branch's spec dir and excludes any
+   sibling branch's.
+
+   Compare the two `rev-parse` outputs, never `$FEATURE_DIR` against a toplevel
+   directly — `rev-parse` resolves symlinks (on macOS `/var` → `/private/var`),
+   so a direct comparison misfires. `status --short` rather than `git diff`,
+   because a new spec dir is untracked and `diff` reports nothing on the most
+   common case.
+
+   **Report only.** Do not stage, commit, push, or delete anything in the spec
+   root, and do not offer to. Someone who wants their specs committed will commit
+   them; what they cannot do is notice that a directory they never open has
+   uncommitted work in it.
+
+   Any *working tree* other than this one qualifies, including a sibling worktree
+   on an orphan branch — it shares an object store but has its own toplevel.
+
 **Before reporting done:** confirm `session-summary.md` has real content (no
 `(fill in)` placeholders) and that steps 5–6 were offered to the user. If the
 summary is still a scaffold, you haven't finished — go back to step 4.
