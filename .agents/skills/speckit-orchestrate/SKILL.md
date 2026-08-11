@@ -13,23 +13,27 @@ description: 'Read pipeline state after a speckit step completes, then auto-adva
 
    `wfctl` closes part of this gap itself: `resolve_spec_dir` tries the exact
    branch dir, then a key glob, then the same lookup against each ancestor branch
-   nearest-first. **Do not delete this step on the strength of that.** It only
-   fires when the sub-issue branch is a git descendant of the epic's planning
-   branch, which requires `--base {epic-planning-branch}` at worktree creation
-   (`speckit-delivery-plan`'s "Epic Planning Branch as Worktree Base"). A repo
-   whose worktree tool bases every branch on the trunk, or that keeps `specs/`
-   untracked so the directory must be copied in by hand, never satisfies that —
-   and the check below resolves both cases, because it matches on the issue key
-   in `delivery.md` rather than on branch ancestry.
+   nearest-first. **Do not delete this step on the strength of that.** The
+   ancestor leg needs the sub-issue branch to be a git descendant of the epic's
+   branch, which nothing arranges — worktrees branch off the target branch — and
+   the glob legs miss whenever the sub-issue's key differs from the epic's, which
+   is the normal case. The check below resolves both, because it matches on the
+   issue key recorded in `delivery.md` rather than on branch ancestry or
+   directory name.
 
-   Check: does `specs/<current-branch>/` exist? If not:
+   Check: run `eval "$(wfctl feature-paths)"` and test whether `$FEATURE_DIR`
+   exists. It resolves through this repo's recorded spec root, which may be
+   outside the working tree — never assume the spec dir is inside the repo. If it
+   does not exist:
    - Resolve the active tracker's key format: read `key_pattern` from whichever
      `.agents/trackers/*.json` exists (default `\d+` — GitHub's bare-numeric
      default — if no tracker config or no `key_pattern` field). Build a match
      regex `#?{key_pattern}` — optional leading `#`, since GitHub issues are
      conventionally written `#123` in prose while other trackers' keys (e.g.
      `PROJ-123`) never take one.
-   - Glob `specs/*/delivery.md`; in each one's "Issue Grouping Map" table, search
+   - Glob `*/delivery.md` under the spec root — the parent of `$FEATURE_DIR`, so
+     the glob follows the spec root wherever it points. In each one's "Issue
+     Grouping Map" table, search
      every row for that regex. A row whose match equals the current issue's key
      means that `delivery.md`'s directory is the real spec dir, and the row's
      `Tasks` column is this sub-issue's task range. (Older delivery.md files may

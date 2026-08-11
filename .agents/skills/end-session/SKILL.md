@@ -110,6 +110,39 @@ unfilled is a failed handoff.
    If ending because context is filling, remind the user they can `/clear` and
    `/start-session` to resume from the summary.
 
+   **Also report uncommitted specs when they live in a different working tree.**
+   With a spec root outside the working repo, the spec dir is somewhere the user
+   never opens, so uncommitted work there is invisible:
+
+   ```bash
+   eval "$(wfctl feature-paths)"                                    # sets FEATURE_DIR
+   SPEC_REPO=$(git -C "$FEATURE_DIR" rev-parse --show-toplevel 2>/dev/null || true)
+   THIS_REPO=$(git rev-parse --show-toplevel)
+   ```
+
+   Say nothing at all when `SPEC_REPO` is empty — the spec root is a plain
+   directory, or this branch has no spec dir, and `git -C` fails identically for
+   both — or when it equals `THIS_REPO`, since step 5 already covered that case.
+   Otherwise count the lines of
+   `git -C "$SPEC_REPO" status --short -- "$FEATURE_DIR"` and, if non-zero, add
+   one line to the report naming `$SPEC_REPO` and the count. Nothing else to
+   report means nothing is said.
+
+   Compare the two `rev-parse` outputs, never `$FEATURE_DIR` against a toplevel
+   directly — `rev-parse` resolves symlinks (on macOS `/var` → `/private/var`),
+   so a direct comparison misfires. `status --short` rather than `git diff`,
+   because a new spec dir is untracked and `diff` reports nothing on the most
+   common case.
+
+   **Report only.** Do not stage, commit, push, or delete anything in the spec
+   root, and do not offer to. Someone who wants their specs committed will commit
+   them; what they cannot do is notice that a directory they never open has
+   uncommitted work in it.
+
+   This fires for any *working tree* other than the current one — a separate
+   repository, or a sibling worktree on an orphan branch, which shares an object
+   store but has its own toplevel.
+
 **Before reporting done:** confirm `session-summary.md` has real content (no
 `(fill in)` placeholders) and that steps 5–6 were offered to the user. If the
 summary is still a scaffold, you haven't finished — go back to step 4.

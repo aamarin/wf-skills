@@ -220,10 +220,8 @@ Given that feature description, do this:
 
 8. Report completion with branch name, spec file path, checklist results, and readiness for the next phase (`/speckit.clarify` or `/speckit.plan`).
 
-   Also remind the user of the branch's role in the delivery workflow:
+   Also remind the user:
 
-   > **Planning branch convention**: `{key}-{feature-name}` is a **planning branch** — it will become a lightweight planning PR (`specs/{key}-{feature-name}/` only, no code) that merges to `dev` before any implementation begins. Implementation branches are created off `dev` after that planning PR merges.
-   >
    > **One PR = one issue.** When the implementation PR merges, reconcile the tracker (`wfctl issue view`/`close`, backend-agnostic — `end-session` does this automatically). If the feature is too large for one PR, flag it during `/speckit.decompose` — do not pre-split; discuss first.
 
 **NOTE:** This workflow assumes the branch and its issue key already exist (step 1
