@@ -34,11 +34,20 @@ minimal-complexity bias
 
 _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
-Add this project's gates below, derived from `.specify/memory/constitution.md` if
-it exists. If the repo has no constitution, substitute gates from its own
-documented conventions and record the substitution in Complexity Tracking — a
-gate with no source is decorative, and one borrowed from another project is false.
+<!--
+  ACTION REQUIRED: Add this project's gates below, derived from
+  `.specify/memory/constitution.md` if it exists. If the repo has no
+  constitution, substitute gates from its own documented conventions and record
+  the substitution in Complexity Tracking — a gate with no source is decorative,
+  and one borrowed from another project is false. Delete this comment once the
+  gates are in place.
 
+  The two gates below are project-independent. Keep them.
+-->
+
+- [ ] Validation plan exists: the project's type or build check plus the
+      specific automated tests and checks needed for the changed surface are
+      named.
 - [ ] Complexity is justified: any added abstraction, infrastructure, or
       dependency has a measured or explicit reason the simpler path is
       insufficient.

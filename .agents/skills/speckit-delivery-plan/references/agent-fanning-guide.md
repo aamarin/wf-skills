@@ -149,8 +149,7 @@ Modify the entry point at {path to the entry point}:
 2. Add the import for the new registration function.
 3. Replace the block of per-route registration calls with a single call to it,
    in the same position the block occupied.
-4. Leave health routes, middleware, error handler, 404 handler, and server
-   startup unchanged.
+4. Leave everything else in the entry point unchanged.
 Do NOT run the project's type or build check — Agent A is creating the
 registration module simultaneously.
 Signal "T005 complete" when the file is saved.

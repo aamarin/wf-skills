@@ -74,7 +74,7 @@ explicit manual check.
 Examples of foundational tasks (adjust based on your project):
 
 - [ ] T004 Setup database schema and migrations framework
-- [ ] T005 [P] Implement workspace scoping and authentication/authorization framework
+- [ ] T005 [P] Implement the authentication/authorization framework
 - [ ] T006 [P] Setup API routing and middleware structure
 - [ ] T007 Create base models/entities that all stories depend on
 - [ ] T008 Configure error handling, logging, and audit-trail infrastructure
